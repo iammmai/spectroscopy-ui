@@ -1,0 +1,3 @@
+[submodule "pseuco-shared-components"]
+	path = pseuco-shared-components
+	url = https://dgit.cs.uni-saarland.de/pseuco/pseuco-shared-components.git

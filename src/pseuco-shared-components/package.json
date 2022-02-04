@@ -1,0 +1,32 @@
+{
+  "name": "pseuco-shared-components",
+  "version": "1.0.0",
+  "description": "Shared React components for pseuCo apps.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://dgit.cs.uni-saarland.de/pseuco/pseuco-shared-components"
+  },
+  "author": "Felix Freiberger",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@pseuco/colored-petri-nets": "^1.4.5",
+    "@types/classnames": "^2.3.0",
+    "@types/codemirror": "5.60.0",
+    "@types/d3-drag": "^2.0.0",
+    "@types/d3-force": "^2.1.1",
+    "@types/d3-selection": "^2.0.0",
+    "@types/pako": "^1.0.1",
+    "classname": "0.0.0",
+    "codemirror": "^5.61.1",
+    "d3-drag": "^2.0.0",
+    "d3-force": "^2.1.1",
+    "d3-selection": "^2.0.0",
+    "pako": "^2.0.3",
+    "sass": "^1.44.0",
+    "sass-loader": "^12.4.0"
+  }
+}
