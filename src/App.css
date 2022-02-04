@@ -1,8 +1,22 @@
 .App {
   text-align: center;
+  height: 100vh;
 }
 
-/* transition-path {
-  stroke: "black";
-  fill: "none";
-} */
+.content-container {
+  max-width: 80%;
+  height: 70%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 20px;
+}
+
+.input-container {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  width: 100%;
+}

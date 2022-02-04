@@ -1,0 +1,12 @@
+.header {
+  background-color: #074ee8;
+  color: white;
+  height: 50px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.title {
+  margin-left: 15px;
+}
