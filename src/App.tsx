@@ -28,7 +28,6 @@ const reducer = (
       return {
         ...state,
         [action.process]: {
-          ...state.p1,
           ccs: action.payload,
           ccsError: null,
         },
@@ -37,7 +36,7 @@ const reducer = (
       return {
         ...state,
         [action.process]: {
-          ...state.p1,
+          ...state[action.process],
           ccsError: action.payload,
         },
       };
@@ -45,7 +44,7 @@ const reducer = (
       return {
         ...state,
         [action.process]: {
-          ...state.p1,
+          ...state[action.process],
           ccsParsed: action.payload,
         },
       };
