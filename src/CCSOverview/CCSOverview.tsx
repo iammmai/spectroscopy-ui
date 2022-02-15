@@ -1,8 +1,12 @@
 import "./CCSOverview.css";
+import { isEmpty } from "ramda";
+import { useNavigate } from "react-router-dom";
+
 import { Button, TextField } from "@mui/material";
 import { parser } from "@pseuco/ccs-interpreter";
 import React, { useReducer } from "react";
-import Header from '../Header/Header'
+import Header from "Header/Header";
+import api from "api";
 
 type ProcessId = "p1" | "p2";
 
@@ -55,6 +59,7 @@ const reducer = (
 
 function CCSOverview() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  let navigate = useNavigate();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -82,6 +87,20 @@ function CCSOverview() {
         payload: "Please enter a valid CCS term.",
       });
     }
+  };
+
+  const handleCompare = () => {
+    api
+      .post("/", {
+        p1: state.p1.ccs,
+        p2: state.p2.ccs,
+      })
+      .then((response) => {
+        navigate(`/${response.data._id}`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -119,7 +138,18 @@ function CCSOverview() {
             })}
           />
         </div>
-        <Button variant="contained">Compare</Button>
+        <Button
+          variant="contained"
+          onClick={handleCompare}
+          disabled={
+            state.p1.ccsError ||
+            state.p2.ccsError ||
+            isEmpty(state.p1.ccs) ||
+            isEmpty(state.p2.ccs)
+          }
+        >
+          Compare
+        </Button>
       </div>
     </div>
   );
