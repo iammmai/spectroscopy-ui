@@ -16,13 +16,13 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "downlevelIteration": true,
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "baseUrl": "src"
   },
   "include": [
     "src",
     "types/@pseuco/ccs-interpreter",
     "types/@pseuco/index.d.ts",
     "src/pseuco-shared-components"
-  ],
-  "baseUrl": "./"
+  ]
 }
