@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.7.0",
     "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.4.2",
     "@mui/lab": "*",
     "@mui/material": "^5.2.3",
     "@pseuco/ccs-interpreter": "^0.8.8",

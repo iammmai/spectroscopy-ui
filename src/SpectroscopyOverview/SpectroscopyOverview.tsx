@@ -1,19 +1,35 @@
-import { useQuery } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import "./SpectroscopyOverview.css";
 import Header from "Header/Header";
 import api from "api";
+import { ProcessId } from "spectroscopyTypes";
+
+import LTS from "./LTS";
 
 function SpectroscopyOverview() {
   let { id } = useParams();
+  const queryClient = useQueryClient();
+
   const { isLoading, error, data } = useQuery("spectroscopyData", async () => {
     const { data } = await api.get(`/${id}`);
     return data;
   });
 
-  if (isLoading) return <CircularProgress />;
+  const updateSpectroscopyMutation = useMutation(
+    (data: { [key in ProcessId]?: String }) => api.post(`/${id}`, data),
+    {
+      onSuccess: ({ data }: { data: any }) => {
+        queryClient.setQueryData("spectroscopyData", data);
+      },
+    }
+  );
+
+  const handleUpdateCCS = (processId: ProcessId) => (ccs: String) => {
+    updateSpectroscopyMutation.mutate({ [processId]: ccs });
+  };
 
   if (error) return <>"An error has occurred: "</>;
 
@@ -21,9 +37,14 @@ function SpectroscopyOverview() {
     <div className="App">
       <Header />
       <div className="content-container">
-        <h2>Test</h2>
-        <span>{data.p1}</span>
-        <span>{data.p2}</span>
+        {isLoading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <h2>Test</h2>
+            <LTS ccs={data.p1} onUpdateCCS={handleUpdateCCS("p1")} />
+          </>
+        )}
       </div>
     </div>
   );

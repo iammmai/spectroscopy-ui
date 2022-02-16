@@ -8,10 +8,8 @@ import { useNavigate } from "react-router-dom";
 
 import Header from "Header/Header";
 import api from "api";
-
+import { ProcessId } from "spectroscopyTypes";
 import "./CCSOverview.css";
-
-type ProcessId = "p1" | "p2";
 
 const initialState = {
   p1: {
