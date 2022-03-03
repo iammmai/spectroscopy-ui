@@ -9,10 +9,26 @@ import { useCallback } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { debounce } from "utils";
 
+import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
+import { LTS } from "../pseuco-shared-components/lts/lts";
 import EditableTitle from "./EditableTitle";
 import "./LTS.css";
 
-const LTS = ({
+const myFirstLTS: LTS = {
+  initialState: "a.b.0",
+  states: {
+    "a.b.0": {
+      transitions: [{ label: "a", target: "b.0", detailsLabel: "hi" }],
+    },
+    "b.0": {
+      transitions: [{ label: "b", target: "0", detailsLabel: "hi" }],
+    },
+  },
+};
+
+const size = 400;
+
+const LTSCard = ({
   ccs,
   onUpdateCCS,
 }: {
@@ -23,7 +39,6 @@ const LTS = ({
 
   return (
     <>
-      <EditableTitle value={ccs} onChange={debounceOnChange} prefix="p1 =" />
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -32,20 +47,29 @@ const LTS = ({
           className="lts-accordion-header"
         >
           <EditableTitle
+            inputLabel="p1"
             value={ccs}
             onChange={debounceOnChange}
             prefix="p1 ="
           />
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
+          <svg width={size} height={size}>
+            <LTSInteractiveView
+              lts={myFirstLTS}
+              width={size}
+              height={size}
+              showExpandNotice={true}
+              stickyNodes={false}
+              directedExploration={false}
+              shortWeakSteps={false}
+              scale={0.25}
+            />
+          </svg>
         </AccordionDetails>
       </Accordion>
     </>
   );
 };
 
-export default LTS;
+export default LTSCard;

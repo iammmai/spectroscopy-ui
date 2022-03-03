@@ -31,7 +31,7 @@ function SpectroscopyOverview() {
     updateSpectroscopyMutation.mutate({ [processId]: ccs });
   };
 
-  if (error) return <>"An error has occurred: "</>;
+  if (error) return <>"An error has occurred:jmh "</>;
 
   return (
     <div className="App">

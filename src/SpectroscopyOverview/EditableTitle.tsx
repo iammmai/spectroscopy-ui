@@ -7,10 +7,12 @@ import { useState } from "react";
 import "./EditableTitle.css";
 
 const EditableTitle = ({
+  inputLabel,
   prefix,
   value,
   onChange,
 }: {
+  inputLabel: String;
   prefix: String;
   value: String;
   onChange: (val: String) => void;
@@ -33,7 +35,8 @@ const EditableTitle = ({
       onChange={handleChange}
       onBlur={() => setIsEditing(false)}
       autoFocus
-      label={prefix}
+      label={inputLabel}
+      fullWidth
     />
   ) : (
     <div className="title-container">
