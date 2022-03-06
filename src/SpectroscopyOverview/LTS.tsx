@@ -13,6 +13,7 @@ import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSIn
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import EditableTitle from "./EditableTitle";
 import "./LTS.css";
+import LTSViewer from "LTSViewer/LTSViewer";
 
 const myFirstLTS: LTS = {
   initialState: "a.b.0",
@@ -32,8 +33,8 @@ const LTSCard = ({
   ccs,
   onUpdateCCS,
 }: {
-  ccs: String;
-  onUpdateCCS: (ccs: String) => void;
+  ccs: string;
+  onUpdateCCS: (ccs: string) => void;
 }) => {
   const debounceOnChange = useCallback(debounce(onUpdateCCS, 400), []);
 
@@ -54,18 +55,7 @@ const LTSCard = ({
           />
         </AccordionSummary>
         <AccordionDetails>
-          <svg width={size} height={size}>
-            <LTSInteractiveView
-              lts={myFirstLTS}
-              width={size}
-              height={size}
-              showExpandNotice={true}
-              stickyNodes={false}
-              directedExploration={false}
-              shortWeakSteps={false}
-              scale={0.25}
-            />
-          </svg>
+          <LTSViewer ccs={ccs} />
         </AccordionDetails>
       </Accordion>
     </>
