@@ -5,19 +5,9 @@ import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSIn
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import { useMemo } from "react";
 
-const size = 800;
+import "./LTSViewer.css";
 
-// const myFirstLTS: LTS = {
-//   initialState: "a.b.0",
-//   states: {
-//     "a.b.0": {
-//       transitions: [{ label: "a", target: "b.0", detailsLabel: "hi" }],
-//     },
-//     "b.0": {
-//       transitions: [{ label: "b", target: "0", detailsLabel: "hi" }],
-//     },
-//   },
-// };
+const size = 400;
 
 const transformToLTS = (ccs: string) => {
   let initialState = parser.parse(ccs);
@@ -65,15 +55,13 @@ const exploreStates = (acc: any, states: any[]): any => {
 
 const LTSViewer = ({ ccs }: { ccs: string }) => {
   const lts = useMemo(() => transformToLTS(ccs), [ccs]) as LTS;
-
-  console.log(lts);
   return (
     <svg width={size} height={size}>
       <LTSInteractiveView
         lts={lts}
         width={size}
         height={size}
-        showExpandNotice={true}
+        showExpandNotice={false}
         stickyNodes={false}
         directedExploration={false}
         shortWeakSteps={false}

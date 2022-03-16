@@ -12,10 +12,10 @@ const EditableTitle = ({
   value,
   onChange,
 }: {
-  inputLabel: String;
-  prefix: String;
-  value: String;
-  onChange: (val: String) => void;
+  inputLabel: string;
+  prefix: string;
+  value: string;
+  onChange: (val: string) => void;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
 

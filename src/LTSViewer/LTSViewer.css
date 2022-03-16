@@ -1,0 +1,9 @@
+.transition-path {
+  stroke: black;
+  fill: none;
+}
+
+.state-border {
+  stroke: black;
+  fill: white;
+}

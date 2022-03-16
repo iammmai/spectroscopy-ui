@@ -7,7 +7,7 @@ import Header from "Header/Header";
 import api from "api";
 import { ProcessId } from "spectroscopyTypes";
 
-import LTS from "./LTS";
+import LTSCard from "./LTS";
 
 function SpectroscopyOverview() {
   let { id } = useParams();
@@ -40,10 +40,18 @@ function SpectroscopyOverview() {
         {isLoading ? (
           <CircularProgress />
         ) : (
-          <>
-            <h2>Test</h2>
-            <LTS ccs={data.p1} onUpdateCCS={handleUpdateCCS("p1")} />
-          </>
+          <div className="lts-container">
+            <LTSCard
+              ccs={data.p1}
+              onUpdateCCS={handleUpdateCCS("p1")}
+              label="p1"
+            />
+            <LTSCard
+              ccs={data.p2}
+              onUpdateCCS={handleUpdateCCS("p2")}
+              label="p2"
+            />
+          </div>
         )}
       </div>
     </div>

@@ -79,8 +79,6 @@ function CCSOverview() {
   const validateCCS = (processId: ProcessId) => () => {
     try {
       const parsedResult = parser.parse(state[processId].ccs) as any;
-      console.log(parsedResult);
-      console.log(parsedResult.getPossibleSteps());
       dispatch({
         type: "setParsedCCS",
         process: processId,
