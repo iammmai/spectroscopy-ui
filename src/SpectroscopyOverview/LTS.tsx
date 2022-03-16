@@ -9,8 +9,6 @@ import EditableTitle from "./EditableTitle";
 import "./LTS.css";
 import LTSViewer from "LTSViewer/LTSViewer";
 
-const size = 400;
-
 const LTSCard = ({
   label,
   ccs,
@@ -24,8 +22,7 @@ const LTSCard = ({
     try {
       parser.parse(ccs);
       onUpdateCCS(ccs);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
   const debounceOnChange = useCallback(debounce(handleUpdateCCS, 400), []);
 

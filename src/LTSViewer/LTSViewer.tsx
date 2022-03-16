@@ -7,7 +7,7 @@ import { useMemo } from "react";
 
 import "./LTSViewer.css";
 
-const size = 400;
+const size = window.innerWidth / 3;
 
 const transformToLTS = (ccs: string) => {
   let initialState = parser.parse(ccs);
