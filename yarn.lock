@@ -1530,7 +1530,7 @@
   dependencies:
     "@babel/runtime" "^7.17.2"
 
-"@mui/lab@*":
+"@mui/lab@5.0.0-alpha.73":
   version "5.0.0-alpha.73"
   resolved "https://registry.yarnpkg.com/@mui/lab/-/lab-5.0.0-alpha.73.tgz#f1b81682be155d87d492f64202ada8b7fe83be08"
   integrity sha512-10Uj0Atc7gBTXKX4VV38P6RdqTQrJZxcl3HeEcytIO1S3NAGfc7gZ3Hdpnhtj5U8kcRJZZPH9LtrBbMZzxU/1A==
