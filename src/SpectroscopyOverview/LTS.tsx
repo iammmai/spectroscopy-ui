@@ -24,6 +24,8 @@ const LTSCard = ({
       onUpdateCCS(ccs);
     } catch (error) {}
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounceOnChange = useCallback(debounce(handleUpdateCCS, 400), []);
 
   return (

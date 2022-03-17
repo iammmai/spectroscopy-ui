@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { parser } from "@pseuco/ccs-interpreter";
+import Button from "@mui/material/Button";
 import * as R from "ramda";
 
 import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
@@ -55,19 +57,30 @@ const exploreStates = (acc: any, states: any[]): any => {
 
 const LTSViewer = ({ ccs }: { ccs: string }) => {
   const lts = useMemo(() => transformToLTS(ccs), [ccs]) as LTS;
+  const ref = useRef(null);
+
+  const handleExpandAll = () => {
+    if (ref.current !== null) {
+      (ref.current as LTSInteractiveView).expandAllSingleStep();
+    }
+  };
   return (
-    <svg width={size} height={size}>
-      <LTSInteractiveView
-        lts={lts}
-        width={size}
-        height={size}
-        showExpandNotice={false}
-        stickyNodes={false}
-        directedExploration={false}
-        shortWeakSteps={false}
-        scale={0.5}
-      />
-    </svg>
+    <>
+      <Button onClick={handleExpandAll}>Expand step</Button>
+      <svg width={size} height={size}>
+        <LTSInteractiveView
+          lts={lts}
+          width={size}
+          height={size}
+          showExpandNotice={false}
+          stickyNodes={false}
+          directedExploration={false}
+          shortWeakSteps={false}
+          scale={0.5}
+          ref={ref}
+        />
+      </svg>
+    </>
   );
 };
 
