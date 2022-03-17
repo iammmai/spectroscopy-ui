@@ -6,6 +6,7 @@ import "./SpectroscopyOverview.css";
 import Header from "Header/Header";
 import api from "api";
 import { ProcessId } from "spectroscopyTypes";
+import Settingsbar from "./SettingsBar";
 
 import LTSCard from "./LTS";
 
@@ -36,6 +37,7 @@ function SpectroscopyOverview() {
   return (
     <div className="App">
       <Header />
+      <Settingsbar />
       <div className="content-container">
         {isLoading ? (
           <CircularProgress />
