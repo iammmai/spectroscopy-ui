@@ -8,17 +8,6 @@ import { SetStateAction, useState } from "react";
 
 import { styled } from "@mui/material/styles";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
 const EQUIVALENCES = [
   "bisimulation",
   "2-nested simulation",
@@ -35,6 +24,7 @@ const StyledFormControl = styled(FormControl)`
   flex-direction: row;
   gap: 10px;
   margin: 20px;
+  justify-content: space-between;
 `;
 
 const StyledSelect = styled(Select)`
@@ -43,7 +33,7 @@ const StyledSelect = styled(Select)`
 
 const Settingsbar = () => {
   const [selectedEquivalences, setEquivalences] = useState<string[] | []>([]);
-
+  
   const handleSelect = (e: SelectChangeEvent<unknown>) =>
     setEquivalences(e.target.value as SetStateAction<string[] | []>);
 

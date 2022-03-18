@@ -5,7 +5,7 @@ import { QueryClientProvider, QueryClient } from "react-query";
 
 import CCSOverview from "./CCSOverview/CCSOverview";
 import SpectroscopyOverview from "./SpectroscopyOverview/SpectroscopyOverview";
-
+import SpectroscopyList from "SpectroscopyList/SpectroscopyList";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +15,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<CCSOverview />} />
+          <Route path="/list" element={<SpectroscopyList />} />
           <Route path="/:id" element={<SpectroscopyOverview />} />
         </Routes>
       </BrowserRouter>
