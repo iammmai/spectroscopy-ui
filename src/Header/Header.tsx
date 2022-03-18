@@ -8,6 +8,9 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -27,6 +30,10 @@ const Header = () => {
 
   const goToList = () => {
     navigate("/list");
+  };
+
+  const goToCCSOverview = () => {
+    navigate("/");
   };
 
   return (
@@ -62,6 +69,12 @@ const Header = () => {
             onClose={handleClose}
           >
             <MenuItem onClick={goToList}>Overview</MenuItem>
+            <MenuItem onClick={goToCCSOverview}>
+              <ListItemIcon>
+                <AddOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              New spectroscopy
+            </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>

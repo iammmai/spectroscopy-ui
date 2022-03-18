@@ -25,6 +25,7 @@
     "@types/pako": "^1.0.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/styled-components": "^5.1.24",
     "axios": "^0.26.0",
     "classname": "0.0.0",
     "codemirror": "^5.61.1",
@@ -42,6 +43,7 @@
     "react-scripts": "4.0.3",
     "sass": "^1.44.0",
     "sass-loader": "^12.4.0",
+    "styled-components": "^5.3.3",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
