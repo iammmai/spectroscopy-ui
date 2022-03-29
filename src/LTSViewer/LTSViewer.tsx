@@ -20,8 +20,18 @@ const transformToLTS = (ccs: string) => {
 };
 
 const exploreStates = (acc: any, states: any[]): any => {
-  const exploredStates = states.reduce(
-    (prev, currentState) => ({
+  //getPossibleSteps mutates state if there is | - operator! that is why make a deep clone first
+  const statesCopy = R.clone(states);
+
+  if (
+    R.all((state: string) => {
+      return !!state.toString().match(/^(0\|)*0$/gm);
+    })(states)
+  ) {
+    return acc;
+  }
+  const exploredStates = states.reduce((prev, currentState) => {
+    return {
       ...prev,
       [currentState.toString().replace("\n", "")]: {
         transitions: (currentState.getPossibleSteps() as any).map(
@@ -31,18 +41,14 @@ const exploreStates = (acc: any, states: any[]): any => {
           })
         ),
       },
-    }),
-    {}
-  );
+    };
+  }, {});
 
   const newStates = {
     ...acc,
     ...exploredStates,
   };
 
-  if (R.all((state) => state === "0")(states)) {
-    return newStates;
-  }
   return exploreStates(
     newStates,
     R.chain(
@@ -50,13 +56,47 @@ const exploreStates = (acc: any, states: any[]): any => {
         state
           .getPossibleSteps()
           .map((step: any) => parser.parse(step.perform().toString())),
-      states
+      statesCopy
     )
   );
 };
 
+const renameStates = (lts: LTS, prefix = "P") => {
+  const newStateNames = Object.keys(lts.states)
+    .sort((a, b) => b.length - a.length)
+    .reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: `${prefix}${Object.values(acc).length}`,
+      }),
+      {}
+    );
+
+  const newStates = Object.entries(newStateNames).reduce(
+    (acc: any, [oldKey, newKey]: any) => ({
+      ...acc,
+      [newKey]: {
+        ...lts.states[oldKey],
+        ccs: oldKey,
+        transitions: lts.states[oldKey].transitions?.map(
+          ({ label, target }) => ({
+            label,
+            target: (newStateNames as any)[target],
+          })
+        ),
+      },
+    }),
+    {}
+  );
+  return {
+    initialState: `${prefix}0`,
+    states: newStates,
+  };
+};
+
 const LTSViewer = ({ ccs }: { ccs: string }) => {
-  const lts = useMemo(() => transformToLTS(ccs), [ccs]) as LTS;
+  const lts = useMemo(() => renameStates(transformToLTS(ccs)), [ccs]) as LTS;
+  // const lts = useMemo(() => transformToLTS(ccs), [ccs]) as LTS;
   const ref = useRef(null);
 
   const handleExpandAll = () => {
@@ -64,6 +104,9 @@ const LTSViewer = ({ ccs }: { ccs: string }) => {
       (ref.current as LTSInteractiveView).expandAllSingleStep();
     }
   };
+
+  console.log(lts);
+  // console.log("renamed", renameStates(lts));
   return (
     <>
       <Button onClick={handleExpandAll}>Expand step</Button>

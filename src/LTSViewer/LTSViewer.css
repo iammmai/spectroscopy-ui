@@ -7,3 +7,7 @@
   stroke: black;
   fill: white;
 }
+
+.state-label {
+  font-size: 12px;
+}
