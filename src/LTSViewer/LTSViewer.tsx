@@ -23,13 +23,6 @@ const exploreStates = (acc: any, states: any[]): any => {
   //getPossibleSteps mutates state if there is | - operator! that is why make a deep clone first
   const statesCopy = R.clone(states);
 
-  if (
-    R.all((state: string) => {
-      return !!state.toString().match(/^(0\|)*0$/gm);
-    })(states)
-  ) {
-    return acc;
-  }
   const exploredStates = states.reduce((prev, currentState) => {
     return {
       ...prev,
@@ -48,6 +41,14 @@ const exploreStates = (acc: any, states: any[]): any => {
     ...acc,
     ...exploredStates,
   };
+
+  if (
+    R.all((state: string) => {
+      return !!state.toString().match(/^(0\|)*0$/gm);
+    })(statesCopy)
+  ) {
+    return newStates;
+  }
 
   return exploreStates(
     newStates,
@@ -94,9 +95,11 @@ const renameStates = (lts: LTS, prefix = "P") => {
   };
 };
 
-const LTSViewer = ({ ccs }: { ccs: string }) => {
-  const lts = useMemo(() => renameStates(transformToLTS(ccs)), [ccs]) as LTS;
-  // const lts = useMemo(() => transformToLTS(ccs), [ccs]) as LTS;
+const LTSViewer = ({ ccs, prefix = "P" }: { ccs: string; prefix: string }) => {
+  const lts = useMemo(
+    () => renameStates(transformToLTS(ccs), prefix),
+    [ccs, prefix]
+  ) as LTS;
   const ref = useRef(null);
 
   const handleExpandAll = () => {
@@ -105,8 +108,6 @@ const LTSViewer = ({ ccs }: { ccs: string }) => {
     }
   };
 
-  console.log(lts);
-  // console.log("renamed", renameStates(lts));
   return (
     <>
       <Button onClick={handleExpandAll}>Expand step</Button>
