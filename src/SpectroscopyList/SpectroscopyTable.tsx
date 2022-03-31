@@ -1,6 +1,6 @@
 import { DataGrid, GridColDef, GridCellParams } from "@mui/x-data-grid";
 
-import { useQuery } from "react-query";
+import { useQueries, useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 
 import api from "api";
@@ -8,7 +8,7 @@ import { CircularProgress } from "@mui/material";
 
 const SpectroscopyTable = ({ className }: { className: string }) => {
   const { isLoading, error, data } = useQuery("spectroscopyList", async () => {
-    const { data } = await api.get(`/list`);
+    const { data } = await api.get("/spectroscopy/list");
     return data;
   });
 
@@ -22,8 +22,8 @@ const SpectroscopyTable = ({ className }: { className: string }) => {
   }
 
   const columns: GridColDef[] = [
-    { field: "p1", headerName: "P1", width: 230 },
-    { field: "p2", headerName: "P2", width: 230 },
+    { field: "title", headerName: "Title", width: 230 },
+    { field: "description", headerName: "Description", width: 230 },
     {
       field: "createdAt",
       headerName: "Created at",

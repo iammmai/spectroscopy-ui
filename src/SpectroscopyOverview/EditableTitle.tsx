@@ -13,7 +13,7 @@ const EditableTitle = ({
   onChange,
 }: {
   inputLabel: string;
-  prefix: string;
+  prefix?: string;
   value: string;
   onChange: (val: string) => void;
 }) => {

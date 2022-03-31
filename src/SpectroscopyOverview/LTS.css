@@ -5,6 +5,7 @@
 
 .MuiAccordion-root {
   margin-top: 0 !important;
+  width: 45% !important;
 }
 
 .css-tvlu1z-MuiPaper-root-MuiAccordion-root:before {
