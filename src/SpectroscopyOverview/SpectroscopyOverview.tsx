@@ -34,11 +34,27 @@ function SpectroscopyOverview() {
     }
   );
 
+  const updateSpectroscopyMutation = useMutation(
+    (data: { id: string; title?: string; description?: string }) =>
+      api.post(`spectroscopy/${data.id}`, data),
+    {
+      onSuccess: ({ data }: { data: any }) => {
+        queryClient.invalidateQueries("spectroscopyData");
+      },
+    }
+  );
+
   const handleUpdateCCS = (processId: string) => (ccs: string) => {
     updateFormulaMutation.mutate({ id: processId, ccs });
   };
 
-  const handleTitleChange = () => {};
+  const handleTitleChange = (title: string) => {
+    updateSpectroscopyMutation.mutate({ id: id as string, title });
+  };
+
+  const handleDescriptionChange = (description: string) => {
+    updateSpectroscopyMutation.mutate({ id: id as string, description });
+  };
   if (error) return <>"An error has occurred:jmh "</>;
 
   return (
@@ -53,8 +69,18 @@ function SpectroscopyOverview() {
             <EditableTitle
               value={data.title}
               inputLabel="Titel"
-              prefix="Titel"
               onChange={handleTitleChange}
+              variant="h4"
+              placeholder="Titel hinzufügen"
+              showEditOnHover
+            />
+            <EditableTitle
+              value={data.description}
+              inputLabel="Beschreibung"
+              onChange={handleDescriptionChange}
+              variant="h6"
+              placeholder="Beschreibung hinzufügen"
+              showEditOnHover
             />
             <div className="lts-container">
               {data.processes.map((process: { _id: string; ccs: string }) => (
@@ -63,6 +89,7 @@ function SpectroscopyOverview() {
                   onUpdateCCS={handleUpdateCCS(process._id)}
                   label="P0"
                   prefix="P"
+                  key={process._id}
                 />
               ))}
             </div>

@@ -11,11 +11,17 @@ const EditableTitle = ({
   prefix,
   value,
   onChange,
+  variant = "body1",
+  placeholder,
+  showEditOnHover = false,
 }: {
   inputLabel: string;
   prefix?: string;
   value: string;
   onChange: (val: string) => void;
+  variant?: "h4" | "body1" | "h5" | "h6";
+  placeholder?: string;
+  showEditOnHover?: boolean;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -37,10 +43,13 @@ const EditableTitle = ({
       autoFocus
       label={inputLabel}
       fullWidth
+      placeholder={placeholder}
     />
   ) : (
     <div className="title-container">
-      <Typography>{`${prefix} ${value}`}</Typography>
+      <Typography variant={variant}>{`${
+        prefix ? prefix : ""
+      } ${value}`}</Typography>
       <EditIcon onClick={handleClick} />
     </div>
   );
