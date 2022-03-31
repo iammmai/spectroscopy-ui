@@ -6,8 +6,7 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
   withCredentials: true,
-  baseURL:
-    process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/spectroscopy",
+  baseURL: process.env.REACT_APP_API_BASE_URL || "http://localhost:8080",
   timeout: 10000,
 });
 

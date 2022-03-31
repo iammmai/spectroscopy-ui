@@ -13,10 +13,12 @@ const LTSCard = ({
   label,
   ccs,
   onUpdateCCS,
+  prefix,
 }: {
   label: string;
   ccs: string;
   onUpdateCCS: (ccs: string) => void;
+  prefix: string;
 }) => {
   const handleUpdateCCS = (ccs: string) => {
     try {
@@ -44,7 +46,7 @@ const LTSCard = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        <LTSViewer ccs={ccs} />
+        <LTSViewer ccs={ccs} prefix={prefix} />
       </AccordionDetails>
     </Accordion>
   );

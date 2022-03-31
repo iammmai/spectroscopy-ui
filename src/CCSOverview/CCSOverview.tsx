@@ -1,58 +1,99 @@
 import LoadingButton from "@mui/lab/LoadingButton";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import { TextField } from "@mui/material";
 import { parser } from "@pseuco/ccs-interpreter";
-import { isEmpty } from "ramda";
 import React, { useReducer } from "react";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
+import * as R from "ramda";
+import { v4 as uuidv4 } from "uuid";
 
 import Header from "Header/Header";
 import api from "api";
-import { ProcessId } from "spectroscopyTypes";
+
 import "./CCSOverview.css";
 
 const initialState = {
-  p1: {
-    ccs: "",
-    ccsError: null,
-    ccsParsed: null,
+  processes: {
+    p0: {
+      id: "p0",
+      ccs: "",
+      ccsError: null,
+      ccsParsed: null,
+    },
   },
-  p2: {
-    ccs: "",
-    ccsError: null,
-    ccsParsed: null,
-  },
+  disableAddProcess: true,
 };
+
+const isValidCCS = R.pipe(R.path(["ccsError"]), R.isNil);
+const hasCCS = R.pipe(R.path(["ccs"]), R.isEmpty, R.not);
+const isValid = R.allPass([isValidCCS, hasCCS]);
 
 const reducer = (
   state: any,
-  action: { type: string; payload: any; process: ProcessId }
+  action: { type: string; payload: any; process: string }
 ) => {
   switch (action.type) {
     case "setCCS":
       return {
         ...state,
-        [action.process]: {
-          ccs: action.payload,
-          ccsError: null,
+        processes: {
+          ...state.processes,
+          [action.process]: {
+            ...state.processes[action.process],
+            ccs: action.payload,
+            ccsError: null,
+          },
         },
+        disableAddProcess: false,
       };
     case "setError":
       return {
         ...state,
-        [action.process]: {
-          ...state[action.process],
-          ccsError: action.payload,
+        processes: {
+          ...state.processes,
+          [action.process]: {
+            ...state.processes[action.process],
+            ccsError: action.payload,
+          },
         },
       };
     case "setParsedCCS":
       return {
         ...state,
-        [action.process]: {
-          ...state[action.process],
-          ccsParsed: action.payload,
+        processes: {
+          ...state.processes,
+          [action.process]: {
+            ...state.processes[action.process],
+            ccsParsed: action.payload,
+          },
         },
       };
+    case "addProcess": {
+      return {
+        ...state,
+        processes: {
+          ...state.processes,
+          [action.process]: {
+            ccs: "",
+            ccsError: null,
+            ccsParsed: null,
+            id: action.process,
+          },
+        },
+        disableAddProcess: true,
+      };
+    }
+    case "removeProcess": {
+      return {
+        ...state,
+        processes: R.omit([action.process], state.processes),
+        disableAddProcess: false,
+      };
+    }
     default:
       throw new Error();
   }
@@ -61,24 +102,25 @@ const reducer = (
 function CCSOverview() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const createSpectroscopyMutation = useMutation(
-    (data: { p1: String; p2: String }) => api.post("/", data)
+    (data: { spectroscopy: any; processes: any }) =>
+      api.post("/spectroscopy", data)
   );
 
   let navigate = useNavigate();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    dispatch({
-      type: "setCCS",
-      process: e.target.id as ProcessId,
-      payload: e.target.value,
-    });
-  };
+  const handleChange =
+    (processId: string) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      dispatch({
+        type: "setCCS",
+        process: processId,
+        payload: e.target.value,
+      });
+    };
 
-  const validateCCS = (processId: ProcessId) => () => {
+  const validateCCS = (processId: string) => () => {
     try {
-      const parsedResult = parser.parse(state[processId].ccs) as any;
+      const parsedResult = parser.parse(state.processes[processId].ccs) as any;
       dispatch({
         type: "setParsedCCS",
         process: processId,
@@ -95,12 +137,33 @@ function CCSOverview() {
   };
 
   const handleCompare = () => {
-    createSpectroscopyMutation.mutate({ p1: state.p1.ccs, p2: state.p2.ccs });
+    createSpectroscopyMutation.mutate({
+      spectroscopy: {},
+      processes: Object.values(state.processes).map((process: any) => ({
+        ccs: process.ccs,
+      })),
+    });
   };
 
   if (createSpectroscopyMutation.isSuccess) {
     navigate(`/${createSpectroscopyMutation.data.data._id}`);
   }
+
+  const handleAddProcess = () => {
+    dispatch({
+      type: "addProcess",
+      payload: {},
+      process: uuidv4(),
+    });
+  };
+
+  const handleRemoveProcess = (processId: string) => () => {
+    dispatch({
+      type: "removeProcess",
+      process: processId,
+      payload: {},
+    });
+  };
 
   return (
     <div className="App">
@@ -110,46 +173,47 @@ function CCSOverview() {
           Enter processes in ccs notation in order to compare them to each other
         </h2>
         <div className="input-container">
-          <TextField
-            id="p1"
-            label="Process 1"
-            variant="outlined"
-            value={state.p1.ccs}
-            onChange={handleChange}
-            fullWidth
-            onBlur={validateCCS("p1")}
-            {...(state.p1.ccsError && {
-              error: true,
-              helperText: state.p1.ccsError,
-            })}
-          />
-          <TextField
-            id="p2"
-            label="Process 2"
-            variant="outlined"
-            value={state.p2.ccs}
-            onChange={handleChange}
-            fullWidth
-            onBlur={validateCCS("p2")}
-            {...(state.p2.ccsError && {
-              error: true,
-              helperText: state.p2.ccsError,
-            })}
-          />
+          {Object.values(state.processes).map((process: any) => (
+            <div className="row-container" key={process.id}>
+              <TextField
+                id={process.id}
+                label={`Process`}
+                variant="outlined"
+                value={process.ccs}
+                onChange={handleChange(process.id)}
+                fullWidth
+                onBlur={validateCCS(process.id)}
+                {...(process.ccsError && {
+                  error: true,
+                  helperText: process.ccsError,
+                })}
+              />
+              <IconButton onClick={handleRemoveProcess(process.id)}>
+                <CloseIcon />
+              </IconButton>
+            </div>
+          ))}
         </div>
-        <LoadingButton
-          variant="contained"
-          onClick={handleCompare}
-          disabled={
-            state.p1.ccsError ||
-            state.p2.ccsError ||
-            isEmpty(state.p1.ccs) ||
-            isEmpty(state.p2.ccs)
-          }
-          loading={createSpectroscopyMutation.isLoading}
-        >
-          Compare
-        </LoadingButton>
+        <div className="row-container">
+          <Button
+            variant="outlined"
+            startIcon={<AddOutlinedIcon />}
+            onClick={handleAddProcess}
+            disabled={state.disableAddProcess}
+          >
+            Process
+          </Button>
+          <LoadingButton
+            variant="contained"
+            onClick={handleCompare}
+            disabled={R.any(R.pipe(isValid, R.not))(
+              Object.values(state.processes)
+            )}
+            loading={createSpectroscopyMutation.isLoading}
+          >
+            Compare
+          </LoadingButton>
+        </div>
       </div>
     </div>
   );

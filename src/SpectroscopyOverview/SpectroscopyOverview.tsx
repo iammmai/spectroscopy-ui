@@ -9,6 +9,7 @@ import { ProcessId } from "spectroscopyTypes";
 import Settingsbar from "./SettingsBar";
 
 import LTSCard from "./LTS";
+import EquivalenceHierarchy from "EquivalenceHierarchy/EquivalenceHierarchy";
 
 function SpectroscopyOverview() {
   let { id } = useParams();
@@ -42,18 +43,23 @@ function SpectroscopyOverview() {
         {isLoading ? (
           <CircularProgress />
         ) : (
-          <div className="lts-container">
-            <LTSCard
-              ccs={data.p1}
-              onUpdateCCS={handleUpdateCCS("p1")}
-              label="p1"
-            />
-            <LTSCard
-              ccs={data.p2}
-              onUpdateCCS={handleUpdateCCS("p2")}
-              label="p2"
-            />
-          </div>
+          <>
+            <div className="lts-container">
+              <LTSCard
+                ccs={data.p1}
+                onUpdateCCS={handleUpdateCCS("p1")}
+                label="P0"
+                prefix="P"
+              />
+              <LTSCard
+                ccs={data.p2}
+                onUpdateCCS={handleUpdateCCS("p2")}
+                label="Q0"
+                prefix="Q"
+              />
+            </div>
+            <EquivalenceHierarchy equivalences={["failure", "traces"]} />
+          </>
         )}
       </div>
     </div>
