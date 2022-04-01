@@ -1,6 +1,8 @@
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { useCallback } from "react";
 import { parser } from "@pseuco/ccs-interpreter";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import IconButton from "@mui/material/IconButton";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { debounce } from "utils";
@@ -15,11 +17,13 @@ const LTSCard = ({
   ccs,
   lts,
   onUpdateCCS,
+  onRemove,
 }: {
   label: string;
   ccs: string;
   lts: LTS;
   onUpdateCCS: (ccs: string) => void;
+  onRemove: () => void;
 }) => {
   const handleUpdateCCS = (ccs: string) => {
     try {
@@ -45,6 +49,9 @@ const LTSCard = ({
           onChange={debounceOnChange}
           prefix={`${label} =`}
         />
+        <IconButton onClick={onRemove}>
+          <DeleteOutlineIcon />
+        </IconButton>
       </AccordionSummary>
       <AccordionDetails>
         <LTSViewer lts={lts} />

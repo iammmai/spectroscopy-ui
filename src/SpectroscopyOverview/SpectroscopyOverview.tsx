@@ -72,6 +72,15 @@ function SpectroscopyOverview() {
     }
   );
 
+  const deleteFormulaMutation = useMutation(
+    (data: { id: string }) => api.delete(`formulas/${data.id}`),
+    {
+      onSuccess: ({ data }: { data: any }) => {
+        queryClient.invalidateQueries("spectroscopyData");
+      },
+    }
+  );
+
   const updateSpectroscopyMutation = useMutation(
     (data: { id: string; title?: string; description?: string }) =>
       api.post(`spectroscopy/${data.id}`, data),
@@ -118,6 +127,10 @@ function SpectroscopyOverview() {
     }
   };
 
+  const handleDeleteProcess = (id: string) => () => {
+    deleteFormulaMutation.mutate({ id });
+  };
+
   if (error) return <>"An error has occurred:jmh "</>;
 
   return (
@@ -159,6 +172,7 @@ function SpectroscopyOverview() {
                     label={process.prefix}
                     key={process._id}
                     lts={process.lts}
+                    onRemove={handleDeleteProcess(process._id)}
                   />
                 )
               )}
