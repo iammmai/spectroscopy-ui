@@ -23,6 +23,7 @@ const initialState = {
       ccs: "",
       ccsError: null,
       ccsParsed: null,
+      prefix: "P",
     },
   },
   disableAddProcess: true,
@@ -94,6 +95,19 @@ const reducer = (
         disableAddProcess: false,
       };
     }
+
+    case "setPrefix": {
+      return {
+        ...state,
+        processes: {
+          ...state.processes,
+          [action.process]: {
+            ...state.processes[action.process],
+            prefix: action.payload,
+          },
+        },
+      };
+    }
     default:
       throw new Error();
   }
@@ -141,6 +155,7 @@ function CCSOverview() {
       spectroscopy: {},
       processes: Object.values(state.processes).map((process: any) => ({
         ccs: process.ccs,
+        prefix: process.prefix,
       })),
     });
   };
@@ -165,6 +180,16 @@ function CCSOverview() {
     });
   };
 
+  const handlePrefixChange =
+    (processId: string) =>
+    (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      dispatch({
+        type: "setPrefix",
+        payload: e.target.value,
+        process: processId,
+      });
+    };
+
   return (
     <div className="App">
       <Header />
@@ -175,6 +200,13 @@ function CCSOverview() {
         <div className="input-container">
           {Object.values(state.processes).map((process: any) => (
             <div className="row-container" key={process.id}>
+              <TextField
+                label="Process-prefix"
+                variant="outlined"
+                onChange={handlePrefixChange(process.id)}
+                value={process.prefix}
+              />
+              :
               <TextField
                 id={process.id}
                 label={`Process`}
@@ -187,6 +219,7 @@ function CCSOverview() {
                   error: true,
                   helperText: process.ccsError,
                 })}
+                placeholder="Enter process in ccs notation"
               />
               <IconButton onClick={handleRemoveProcess(process.id)}>
                 <CloseIcon />
@@ -194,7 +227,7 @@ function CCSOverview() {
             </div>
           ))}
         </div>
-        <div className="row-container">
+        <div className="button-row">
           <Button
             variant="outlined"
             startIcon={<AddOutlinedIcon />}

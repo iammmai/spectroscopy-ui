@@ -24,6 +24,7 @@ const EditableTitle = ({
   showEditOnHover?: boolean;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditVisible, setIsEditVisible] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -34,23 +35,46 @@ const EditableTitle = ({
     setIsEditing(true);
   };
 
+  const handleMouseOver = () => {
+    if (showEditOnHover) {
+      setIsEditVisible(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (showEditOnHover) {
+      setIsEditVisible(false);
+    }
+  };
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    if (showEditOnHover) setIsEditVisible(false);
+  };
+
   return isEditing ? (
     <TextField
       variant="outlined"
       defaultValue={value}
       onChange={handleChange}
-      onBlur={() => setIsEditing(false)}
+      onBlur={handleBlur}
       autoFocus
       label={inputLabel}
       fullWidth
       placeholder={placeholder}
     />
   ) : (
-    <div className="title-container">
+    <div
+      className="title-container"
+      onMouseOver={handleMouseOver}
+      onMouseLeave={handleMouseLeave}
+    >
       <Typography variant={variant}>{`${
         prefix ? prefix : ""
       } ${value}`}</Typography>
-      <EditIcon onClick={handleClick} />
+      {(!showEditOnHover || isEditVisible) && (
+        <EditIcon onClick={handleClick} />
+      )}
     </div>
   );
 };

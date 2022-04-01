@@ -85,11 +85,16 @@ function SpectroscopyOverview() {
             />
             <div className="lts-container">
               {data.processes.map(
-                (process: { _id: string; ccs: string; lts: LTS }) => (
+                (process: {
+                  _id: string;
+                  ccs: string;
+                  lts: LTS;
+                  prefix: string;
+                }) => (
                   <LTSCard
                     ccs={process.ccs}
                     onUpdateCCS={handleUpdateCCS(process._id)}
-                    label="P0"
+                    label={process.prefix}
                     key={process._id}
                     lts={process.lts}
                   />
