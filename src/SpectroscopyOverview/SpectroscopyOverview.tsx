@@ -10,6 +10,7 @@ import Settingsbar from "./SettingsBar";
 import LTSCard from "./LTS";
 import EquivalenceHierarchy from "EquivalenceHierarchy/EquivalenceHierarchy";
 import EditableTitle from "./EditableTitle";
+import { LTS } from "pseuco-shared-components/lts/lts";
 
 function SpectroscopyOverview() {
   let { id } = useParams();
@@ -83,15 +84,17 @@ function SpectroscopyOverview() {
               showEditOnHover
             />
             <div className="lts-container">
-              {data.processes.map((process: { _id: string; ccs: string }) => (
-                <LTSCard
-                  ccs={process.ccs}
-                  onUpdateCCS={handleUpdateCCS(process._id)}
-                  label="P0"
-                  prefix="P"
-                  key={process._id}
-                />
-              ))}
+              {data.processes.map(
+                (process: { _id: string; ccs: string; lts: LTS }) => (
+                  <LTSCard
+                    ccs={process.ccs}
+                    onUpdateCCS={handleUpdateCCS(process._id)}
+                    label="P0"
+                    key={process._id}
+                    lts={process.lts}
+                  />
+                )
+              )}
             </div>
             <EquivalenceHierarchy equivalences={["failure", "traces"]} />
           </>

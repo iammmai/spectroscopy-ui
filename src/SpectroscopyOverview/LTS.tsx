@@ -8,17 +8,18 @@ import { debounce } from "utils";
 import EditableTitle from "./EditableTitle";
 import "./LTS.css";
 import LTSViewer from "LTSViewer/LTSViewer";
+import { LTS } from "pseuco-shared-components/lts/lts";
 
 const LTSCard = ({
   label,
   ccs,
+  lts,
   onUpdateCCS,
-  prefix,
 }: {
   label: string;
   ccs: string;
+  lts: LTS;
   onUpdateCCS: (ccs: string) => void;
-  prefix: string;
 }) => {
   const handleUpdateCCS = (ccs: string) => {
     try {
@@ -46,7 +47,7 @@ const LTSCard = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        <LTSViewer ccs={ccs} prefix={prefix} />
+        <LTSViewer lts={lts} />
       </AccordionDetails>
     </Accordion>
   );
