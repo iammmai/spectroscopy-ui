@@ -1,9 +1,6 @@
 import LoadingButton from "@mui/lab/LoadingButton";
-import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import CloseIcon from "@mui/icons-material/Close";
-import { TextField } from "@mui/material";
 import { parser } from "@pseuco/ccs-interpreter";
 import React, { useReducer } from "react";
 import { useMutation } from "react-query";
@@ -13,6 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import Header from "Header/Header";
 import api from "api";
+import AddProcess from "./AddProcess";
 
 import "./CCSOverview.css";
 
@@ -192,8 +190,6 @@ function CCSOverview() {
       });
     };
 
-  console.log(hasPrefix(state.processes.p0));
-
   return (
     <div className="App">
       <Header />
@@ -203,32 +199,15 @@ function CCSOverview() {
         </h2>
         <div className="input-container">
           {Object.values(state.processes).map((process: any) => (
-            <div className="row-container" key={process.id}>
-              <TextField
-                label="Process-prefix"
-                variant="outlined"
-                onChange={handlePrefixChange(process.id)}
-                value={process.prefix}
-              />
-              :
-              <TextField
-                id={process.id}
-                label={`Process`}
-                variant="outlined"
-                value={process.ccs}
-                onChange={handleChange(process.id)}
-                fullWidth
-                onBlur={validateCCS(process.id)}
-                {...(process.ccsError && {
-                  error: true,
-                  helperText: process.ccsError,
-                })}
-                placeholder="Enter process in ccs notation"
-              />
-              <IconButton onClick={handleRemoveProcess(process.id)}>
-                <CloseIcon />
-              </IconButton>
-            </div>
+            <AddProcess
+              key={process.id}
+              process={process}
+              error={process.ccsError}
+              onPrefixChange={handlePrefixChange(process.id)}
+              onCCSChange={handleChange(process.id)}
+              onRemove={handleRemoveProcess(process.id)}
+              onBlur={validateCCS(process.id)}
+            />
           ))}
         </div>
         <div className="button-row">

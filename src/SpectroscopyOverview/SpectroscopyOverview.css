@@ -19,8 +19,8 @@
 .lts-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  gap: 15px;
+  justify-content: space-between;
+  gap: 10px;
   flex-wrap: wrap;
 }
 

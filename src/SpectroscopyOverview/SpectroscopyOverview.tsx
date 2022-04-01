@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import { useState } from "react";
+import { parser } from "@pseuco/ccs-interpreter";
 
 import "./SpectroscopyOverview.css";
 import Header from "Header/Header";
@@ -11,10 +15,33 @@ import LTSCard from "./LTS";
 import EquivalenceHierarchy from "EquivalenceHierarchy/EquivalenceHierarchy";
 import EditableTitle from "./EditableTitle";
 import { LTS } from "pseuco-shared-components/lts/lts";
+import AddProcess from "CCSOverview/AddProcess";
+
+const isValidCCS = (ccs: string | undefined) => {
+  if (!ccs) return false;
+  try {
+    parser.parse(ccs);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+const initialNewProcessState = {
+  ccs: undefined,
+  prefix: undefined,
+  error: undefined,
+};
 
 function SpectroscopyOverview() {
   let { id } = useParams();
   const queryClient = useQueryClient();
+  const [showAddProcess, setShowAddProcess] = useState(false);
+  const [newProcess, setNewProcess] = useState<{
+    ccs: string | undefined;
+    prefix: string | undefined;
+    error: string | undefined;
+  }>(initialNewProcessState);
 
   const { isLoading, error, data, isSuccess } = useQuery(
     "spectroscopyData",
@@ -28,6 +55,16 @@ function SpectroscopyOverview() {
   const updateFormulaMutation = useMutation(
     (data: { id: string; ccs: string }) =>
       api.post(`formulas/${data.id}`, data),
+    {
+      onSuccess: ({ data }: { data: any }) => {
+        queryClient.invalidateQueries("spectroscopyData");
+      },
+    }
+  );
+
+  const createFormulaMutation = useMutation(
+    (data: { spectroscopyId: string; ccs: string; prefix: string }) =>
+      api.post(`formulas`, data),
     {
       onSuccess: ({ data }: { data: any }) => {
         queryClient.invalidateQueries("spectroscopyData");
@@ -56,6 +93,31 @@ function SpectroscopyOverview() {
   const handleDescriptionChange = (description: string) => {
     updateSpectroscopyMutation.mutate({ id: id as string, description });
   };
+
+  const handleAddProcess = () => {
+    setShowAddProcess(true);
+  };
+
+  const handleValidateCCS = () => {
+    if (isValidCCS(newProcess.ccs)) {
+      setNewProcess({ ...newProcess, error: undefined });
+    } else {
+      setNewProcess({ ...newProcess, error: "Please enter a valid CCS term." });
+    }
+  };
+
+  const handleSaveNewProcess = () => {
+    if (newProcess.ccs && newProcess.prefix) {
+      createFormulaMutation.mutate({
+        ccs: newProcess.ccs,
+        prefix: newProcess.prefix,
+        spectroscopyId: id as string,
+      });
+      setNewProcess(initialNewProcessState);
+      setShowAddProcess(false);
+    }
+  };
+
   if (error) return <>"An error has occurred:jmh "</>;
 
   return (
@@ -101,7 +163,38 @@ function SpectroscopyOverview() {
                 )
               )}
             </div>
-            <EquivalenceHierarchy equivalences={["failure", "traces"]} />
+
+            {showAddProcess ? (
+              <>
+                <AddProcess
+                  process={newProcess}
+                  onPrefixChange={(e) =>
+                    setNewProcess({ ...newProcess, prefix: e.target.value })
+                  }
+                  onCCSChange={(e) =>
+                    setNewProcess({ ...newProcess, ccs: e.target.value })
+                  }
+                  onRemove={() => {
+                    setNewProcess(initialNewProcessState);
+                    setShowAddProcess(false);
+                  }}
+                  onBlur={handleValidateCCS}
+                  error={newProcess.error}
+                />
+                <Button variant="contained" onClick={handleSaveNewProcess}>
+                  Save
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="outlined"
+                startIcon={<AddOutlinedIcon />}
+                onClick={handleAddProcess}
+              >
+                Process
+              </Button>
+            )}
+            {/* <EquivalenceHierarchy equivalences={["failure", "traces"]} /> */}
           </>
         )}
       </div>
