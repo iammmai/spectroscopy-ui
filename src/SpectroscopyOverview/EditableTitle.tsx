@@ -69,9 +69,9 @@ const EditableTitle = ({
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
     >
-      <Typography variant={variant}>{`${
-        prefix ? prefix : ""
-      } ${value}`}</Typography>
+      <Typography variant={variant}>{`${prefix ? prefix : ""} ${
+        value || placeholder
+      }`}</Typography>
       {(!showEditOnHover || isEditVisible) && (
         <EditIcon onClick={handleClick} />
       )}

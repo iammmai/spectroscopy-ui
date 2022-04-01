@@ -69,18 +69,18 @@ function SpectroscopyOverview() {
           <>
             <EditableTitle
               value={data.title}
-              inputLabel="Titel"
+              inputLabel="Title"
               onChange={handleTitleChange}
               variant="h4"
-              placeholder="Titel hinzufügen"
+              placeholder="Add title"
               showEditOnHover
             />
             <EditableTitle
               value={data.description}
-              inputLabel="Beschreibung"
+              inputLabel="Description"
               onChange={handleDescriptionChange}
               variant="h6"
-              placeholder="Beschreibung hinzufügen"
+              placeholder="Add description"
               showEditOnHover
             />
             <div className="lts-container">

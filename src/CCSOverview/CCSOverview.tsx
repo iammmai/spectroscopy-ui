@@ -31,7 +31,8 @@ const initialState = {
 
 const isValidCCS = R.pipe(R.path(["ccsError"]), R.isNil);
 const hasCCS = R.pipe(R.path(["ccs"]), R.isEmpty, R.not);
-const isValid = R.allPass([isValidCCS, hasCCS]);
+const hasPrefix = R.pipe(R.path(["prefix"]), R.isNil, R.not);
+const isValid = R.allPass([isValidCCS, hasCCS, hasPrefix]);
 
 const reducer = (
   state: any,
@@ -83,6 +84,7 @@ const reducer = (
             ccsError: null,
             ccsParsed: null,
             id: action.process,
+            prefix: null,
           },
         },
         disableAddProcess: true,
@@ -189,6 +191,8 @@ function CCSOverview() {
         process: processId,
       });
     };
+
+  console.log(hasPrefix(state.processes.p0));
 
   return (
     <div className="App">
