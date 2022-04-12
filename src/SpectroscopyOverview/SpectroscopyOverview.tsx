@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useState } from "react";
 import { parser } from "@pseuco/ccs-interpreter";
+import * as R from "ramda";
 
 import "./SpectroscopyOverview.css";
 import Header from "Header/Header";
@@ -42,7 +43,9 @@ function SpectroscopyOverview() {
     prefix: string | undefined;
     error: string | undefined;
   }>(initialNewProcessState);
-  const [selectedStates, setSelectedStates] = useState<string[]>([]);
+  const [selectedStates, setSelectedStates] = useState<
+    { id: string; key: string }[]
+  >([]);
 
   const { isLoading, error, data, isSuccess } = useQuery(
     "spectroscopyData",
@@ -132,19 +135,19 @@ function SpectroscopyOverview() {
     deleteFormulaMutation.mutate({ id });
   };
 
-  const handleOnStateClick = (stateKey: string) => {
-    if (selectedStates.includes(stateKey)) {
-      deselectState(stateKey);
+  const handleOnStateClick = (id: string) => (stateKey: string) => {
+    if (R.includes({ id, key: stateKey }, selectedStates)) {
+      deselectState({ id, key: stateKey });
       return;
     }
     if (selectedStates.length < 2) {
-      setSelectedStates((prevState) => [...prevState, stateKey]);
+      setSelectedStates((prevState) => [...prevState, { id, key: stateKey }]);
     }
   };
 
-  const deselectState = (stateKey: string) => {
+  const deselectState = (s: { id: string; key: string }) => {
     setSelectedStates((prevState) =>
-      prevState.filter((state) => state !== stateKey)
+      prevState.filter((state) => state.key !== s.key || state.id !== s.id)
     );
   };
 
@@ -190,7 +193,7 @@ function SpectroscopyOverview() {
                     key={process._id}
                     lts={process.lts}
                     onRemove={handleDeleteProcess(process._id)}
-                    onStateClick={handleOnStateClick}
+                    onStateClick={handleOnStateClick(process._id)}
                   />
                 )
               )}

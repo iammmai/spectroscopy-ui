@@ -60,16 +60,16 @@ const Settingsbar = ({
   selectedStates = [],
   onTagClose,
 }: {
-  selectedStates: string[];
-  onTagClose: (stateKey: string) => void;
+  selectedStates: { id: string; key: string }[];
+  onTagClose: (state: { id: string; key: string }) => void;
 }) => {
   const [selectedEquivalences, setEquivalences] = useState<string[] | []>([]);
 
   const handleSelect = (e: SelectChangeEvent<unknown>) =>
     setEquivalences(e.target.value as SetStateAction<string[] | []>);
 
-  const handleTagClose = (stateKey: string) => () => {
-    onTagClose(stateKey);
+  const handleTagClose = (state: { id: string; key: string }) => () => {
+    onTagClose(state);
   };
 
   return (
@@ -82,9 +82,9 @@ const Settingsbar = ({
           ) : (
             selectedStates.map((state) => (
               <StateTag
-                label={state}
+                label={state.key}
                 onClose={handleTagClose(state)}
-                key={state}
+                key={state.key}
               />
             ))
           )}
