@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import * as R from "ramda";
 import Button from "@mui/material/Button";
 
 import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
@@ -8,7 +9,16 @@ import "./LTSViewer.css";
 
 const size = window.innerWidth / 3;
 
-const LTSViewer = ({ lts }: { lts: LTS }) => {
+const LTSViewer = ({
+  lts,
+  onStateClick,
+}: {
+  lts: LTS;
+  onStateClick?: (
+    stateKey: string,
+    event?: React.MouseEvent<SVGElement, MouseEvent>
+  ) => void;
+}) => {
   const ref = useRef(null);
 
   const handleExpandAll = () => {
@@ -31,6 +41,7 @@ const LTSViewer = ({ lts }: { lts: LTS }) => {
           shortWeakSteps={false}
           scale={0.5}
           ref={ref}
+          onStateClick={onStateClick}
         />
       </svg>
     </>

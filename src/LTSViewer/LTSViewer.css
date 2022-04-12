@@ -11,3 +11,7 @@
 .state-label {
   font-size: 12px;
 }
+
+.state {
+  cursor: pointer;
+}

@@ -66,6 +66,7 @@ export type LTSInteractiveViewProps = {
   scale: number;
   onStateExpanded?: (stateKey: string) => void;
   onStateCollapsed?: (stateKey: string) => void;
+  onStateClick?: (stateKey: string) => void;
   onStateRightClick?: (
     stateKey: string,
     event: React.MouseEvent<SVGElement, MouseEvent>
@@ -672,7 +673,7 @@ class LTSInteractiveView
         onStateDragStart={this.stateDragStart}
         onStateDrag={this.stateDrag}
         onStateDragEnd={this.stateDragEnd}
-        onStateClick={this.onStateClick}
+        onStateClick={this.props.onStateClick || this.onStateClick}
         onStateRightClick={this.props.onStateRightClick}
         onStateMouseOver={this.props.onStateMouseOver}
         onStateMouseOut={this.props.onStateMouseOut}

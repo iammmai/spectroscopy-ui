@@ -42,6 +42,7 @@ function SpectroscopyOverview() {
     prefix: string | undefined;
     error: string | undefined;
   }>(initialNewProcessState);
+  const [selectedStates, setSelectedStates] = useState<string[]>([]);
 
   const { isLoading, error, data, isSuccess } = useQuery(
     "spectroscopyData",
@@ -131,12 +132,28 @@ function SpectroscopyOverview() {
     deleteFormulaMutation.mutate({ id });
   };
 
+  const handleOnStateClick = (stateKey: string) => {
+    if (selectedStates.includes(stateKey)) {
+      deselectState(stateKey);
+      return;
+    }
+    if (selectedStates.length < 2) {
+      setSelectedStates((prevState) => [...prevState, stateKey]);
+    }
+  };
+
+  const deselectState = (stateKey: string) => {
+    setSelectedStates((prevState) =>
+      prevState.filter((state) => state !== stateKey)
+    );
+  };
+
   if (error) return <>"An error has occurred:jmh "</>;
 
   return (
     <div className="App">
       <Header />
-      <Settingsbar />
+      <Settingsbar selectedStates={selectedStates} onTagClose={deselectState} />
       <div className="content-container">
         {isLoading ? (
           <CircularProgress />
@@ -173,6 +190,7 @@ function SpectroscopyOverview() {
                     key={process._id}
                     lts={process.lts}
                     onRemove={handleDeleteProcess(process._id)}
+                    onStateClick={handleOnStateClick}
                   />
                 )
               )}

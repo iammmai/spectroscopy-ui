@@ -18,12 +18,17 @@ const LTSCard = ({
   lts,
   onUpdateCCS,
   onRemove,
+  onStateClick,
 }: {
   label: string;
   ccs: string;
   lts: LTS;
   onUpdateCCS: (ccs: string) => void;
   onRemove: () => void;
+  onStateClick?: (
+    stateKey: string,
+    event?: React.MouseEvent<SVGElement, MouseEvent>
+  ) => void;
 }) => {
   const handleUpdateCCS = (ccs: string) => {
     try {
@@ -54,7 +59,7 @@ const LTSCard = ({
         </IconButton>
       </AccordionSummary>
       <AccordionDetails>
-        <LTSViewer lts={lts} />
+        <LTSViewer lts={lts} onStateClick={onStateClick} />
       </AccordionDetails>
     </Accordion>
   );
