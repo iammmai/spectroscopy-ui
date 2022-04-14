@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as R from "ramda";
 import Button from "@mui/material/Button";
 
@@ -22,14 +22,16 @@ const LTSViewer = ({
   const ref = useRef(null);
 
   const handleExpandAll = () => {
-    if (ref.current !== null) {
-      (ref.current as LTSInteractiveView).expandAllSingleStep();
+    for (let i = 0; i < Object.keys(lts.states).length; i++) {
+      if (ref.current !== null) {
+        (ref.current as LTSInteractiveView).expandAllSingleStep();
+      }
     }
   };
 
   return (
     <>
-      <Button onClick={handleExpandAll}>Expand step</Button>
+      <Button onClick={handleExpandAll}>Expand all</Button>
       <svg width={size} height={size}>
         <LTSInteractiveView
           lts={lts}

@@ -57,7 +57,7 @@ function SpectroscopyOverview() {
   );
 
   const updateFormulaMutation = useMutation(
-    (data: { id: string; ccs: string }) =>
+    (data: { id: string; ccs: string; prefix: string }) =>
       api.post(`formulas/${data.id}`, data),
     {
       onSuccess: ({ data }: { data: any }) => {
@@ -95,9 +95,10 @@ function SpectroscopyOverview() {
     }
   );
 
-  const handleUpdateCCS = (processId: string) => (ccs: string) => {
-    updateFormulaMutation.mutate({ id: processId, ccs });
-  };
+  const handleUpdateCCS =
+    (processId: string, prefix: string) => (ccs: string) => {
+      updateFormulaMutation.mutate({ id: processId, ccs, prefix });
+    };
 
   const handleTitleChange = (title: string) => {
     updateSpectroscopyMutation.mutate({ id: id as string, title });
@@ -188,7 +189,7 @@ function SpectroscopyOverview() {
                 }) => (
                   <LTSCard
                     ccs={process.ccs}
-                    onUpdateCCS={handleUpdateCCS(process._id)}
+                    onUpdateCCS={handleUpdateCCS(process._id, process.prefix)}
                     label={process.prefix}
                     key={process._id}
                     lts={process.lts}
