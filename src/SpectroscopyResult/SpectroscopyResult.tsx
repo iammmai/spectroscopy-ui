@@ -1,16 +1,20 @@
 import { IconButton } from "@mui/material";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { ArrowBack } from "@mui/icons-material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import * as R from "ramda";
+// import Flexbox from "react-svg-flexbox";
 
 import Header from "Header/Header";
 import styled from "styled-components";
 
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import ComparisionTable from "./ComparisonResultTable";
+import LTSViewer from "LTSViewer/LTSViewer";
+import { renameStates, transformToLTS } from "utils/ltsConversion";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -49,6 +53,19 @@ const Tag = styled.div`
   align-items: center;
 `;
 const tagColors = ["#F2994A", "#6FCF97"];
+const grey = "#BDBDBD";
+
+const LTS_WIDTH = 800 as const;
+const LTS_HEIGHT = 400 as const;
+
+const formatCCS = (ccs: string) => ccs.replace(/[()\s]/g, "");
+
+const getStateNameFromLTS = (ccs: string, LTS: LTS) => {
+  const result = (Object.entries(LTS.states).find(
+    (state) => formatCCS(ccs) === formatCCS((state[1] as any).ccs as string)
+  ) || [])[0];
+  return result;
+};
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -77,6 +94,13 @@ function a11yProps(index: number) {
   };
 }
 
+const StyledLTSViewer = styled(LTSViewer)`
+  .state-border {
+    stroke: black;
+    /* fill: red; */
+  }
+`;
+
 const SpectroscopyResultComponent = ({
   result = [],
   processes: states,
@@ -84,7 +108,28 @@ const SpectroscopyResultComponent = ({
   result: SpectroscopyResult[];
   processes: { name: string; ccs: string }[];
 }) => {
-  //   const lts = useMemo(() => {});
+  const ltsData = useMemo(
+    () =>
+      states.map(({ ccs, name }) =>
+        renameStates(transformToLTS(ccs), R.head(name), parseInt(R.tail(name)))
+      ),
+    [states]
+  );
+
+  const processNames = useMemo(
+    () => states.map((state) => state.name),
+    [states]
+  );
+
+  const sortedResult = useMemo(() => {
+    return R.sort((a: { left: string }, b: { left: string }) => {
+      const leftProp = R.prop("left");
+      if (processNames.includes(leftProp(a))) {
+        return -Infinity;
+      }
+      return leftProp(a).length - leftProp(b).length;
+    }, result);
+  }, [result, processNames]);
 
   const [tab, setTab] = useState(0);
 
@@ -92,12 +137,14 @@ const SpectroscopyResultComponent = ({
     setTab(newValue);
   };
 
-  const renderTabLabel = (left: string, right: string) => (
+  const renderTabLabel = (left: string, right: string, isActive: boolean) => (
     <Row>
-      <Tag color={tagColors[0]}>{left}</Tag>
-      <Tag color={tagColors[1]}>{right}</Tag>
+      <Tag color={isActive ? tagColors[0] : grey}>{left}</Tag>
+      <Tag color={isActive ? tagColors[1] : grey}>{right}</Tag>
     </Row>
   );
+
+  const handleStateMouseOver = (stateKey: string) => {};
 
   return (
     <div className="App">
@@ -115,20 +162,40 @@ const SpectroscopyResultComponent = ({
             <Tag color={tagColors[i]}>{`${process.name} = ${process.ccs}`}</Tag>
           ))}
         </Row>
-        {/* <LTSViewer lts={myLTS} /> */}
-        <Box sx={{ width: "100%" }}>
+        <Row>
+          {ltsData.map((lts, i) => {
+            const selected = R.path(
+              [tab, `${i === 0 ? "left" : "right"}`],
+              sortedResult
+            ) as string;
+            return (
+              <StyledLTSViewer
+                lts={{
+                  ...lts,
+                  initialState: processNames.includes(selected)
+                    ? lts.initialState
+                    : getStateNameFromLTS(selected, lts as LTS) || "",
+                }}
+                width={LTS_WIDTH / 2}
+                height={LTS_HEIGHT}
+                expandAll
+              />
+            );
+          })}
+        </Row>
+        <Box sx={{ width: "100%", paddingBottom: "100px" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs value={tab} onChange={handleChange}>
-              {result.map(({ left, right }) => (
+              {sortedResult.map(({ left, right }, i) => (
                 <Tab
                   key={left + right}
-                  label={renderTabLabel(left, right)}
+                  label={renderTabLabel(left, right, tab === i)}
                   {...a11yProps(1)}
                 />
               ))}
             </Tabs>
           </Box>
-          {result.map((resultItem, i) => (
+          {sortedResult.map((resultItem, i) => (
             <TabPanel value={tab} index={i}>
               <ComparisionTable
                 key={resultItem.left + resultItem.right}

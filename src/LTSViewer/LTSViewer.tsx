@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import * as R from "ramda";
 import Button from "@mui/material/Button";
 
@@ -12,14 +12,28 @@ const size = window.innerWidth / 3;
 const LTSViewer = ({
   lts,
   onStateClick,
+  expandAll = false,
+  width = size,
+  height = size,
+  className,
 }: {
   lts: LTS;
   onStateClick?: (
     stateKey: string,
     event?: React.MouseEvent<SVGElement, MouseEvent>
   ) => void;
+  expandAll?: boolean;
+  width?: number;
+  height?: number;
+  className?: string;
 }) => {
   const ref = useRef(null);
+
+  useEffect(() => {
+    if (expandAll) {
+      handleExpandAll();
+    }
+  });
 
   const handleExpandAll = () => {
     for (let i = 0; i < Object.keys(lts.states).length; i++) {
@@ -30,13 +44,13 @@ const LTSViewer = ({
   };
 
   return (
-    <>
-      <Button onClick={handleExpandAll}>Expand all</Button>
-      <svg width={size} height={size}>
+    <div className={className}>
+      {!expandAll && <Button onClick={handleExpandAll}>Expand all</Button>}
+      <svg width={width} height={height}>
         <LTSInteractiveView
           lts={lts}
-          width={size}
-          height={size}
+          width={width}
+          height={height}
           showExpandNotice={false}
           stickyNodes={false}
           directedExploration={false}
@@ -46,7 +60,7 @@ const LTSViewer = ({
           onStateClick={onStateClick}
         />
       </svg>
-    </>
+    </div>
   );
 };
 

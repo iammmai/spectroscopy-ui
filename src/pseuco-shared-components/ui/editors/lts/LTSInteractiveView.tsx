@@ -663,6 +663,16 @@ class LTSInteractiveView
     this.stop();
   };
 
+  handleMouseOver = (stateKey: string) => {
+    this.states[stateKey] = { ...this.states[stateKey], highlighted: true };
+    this.props.onStateMouseOver && this.props.onStateMouseOver(stateKey);
+  };
+
+  handleMouseOut = (stateKey: string) => {
+    this.states[stateKey] = { ...this.states[stateKey], highlighted: false };
+    this.props.onStateMouseOut && this.props.onStateMouseOut(stateKey);
+  };
+
   render(): ReactNode {
     return (
       <LTSSVGFragmentView
@@ -675,8 +685,10 @@ class LTSInteractiveView
         onStateDragEnd={this.stateDragEnd}
         onStateClick={this.props.onStateClick || this.onStateClick}
         onStateRightClick={this.props.onStateRightClick}
-        onStateMouseOver={this.props.onStateMouseOver}
-        onStateMouseOut={this.props.onStateMouseOut}
+        // onStateMouseOver={this.props.onStateMouseOver}
+        onStateMouseOver={this.handleMouseOver}
+        // onStateMouseOut={this.props.onStateMouseOut}
+        onStateMouseOut={this.handleMouseOut}
         onTransitionMouseOver={this.props.onTransitionMouseOver}
         onTransitionMouseOut={this.props.onTransitionMouseOut}
       />

@@ -288,7 +288,7 @@ const LTSSVGFragmentView: React.FC<{
             ) : null}
             <circle r={stateCircleSize(scale)} className="state-border" />
             <text className="state-label" textAnchor="middle" dy="0.4em">
-              {stateKey.length > 2 ? "" : stateKey}
+              {stateKey}
             </text>
             {showExpandNotice && state.expandable ? (
               <g className="expand-notice">
