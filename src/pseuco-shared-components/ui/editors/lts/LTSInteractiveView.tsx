@@ -78,6 +78,8 @@ export type LTSInteractiveViewProps = {
   onErrorStateExpansionAttempt?: (stateKey: string, error: string) => void;
   onUnexploredExpansionAttempt?: (stateKey: string) => void;
   onExpansionStatusChange?: (status: LTSExpansionStatus) => void;
+  initialX?: number;
+  initialY?: number;
 };
 
 const minBorderDistance = stateCircleSize;
@@ -498,8 +500,8 @@ class LTSInteractiveView
       // ensure at least the initial state exists
       if (!this.states[this.props.lts.initialState])
         this.states[this.props.lts.initialState] = {
-          x: 0,
-          y: 0,
+          x: this.props.initialX || 0,
+          y: this.props.initialY || 0,
           initial: true,
           // remaining properties may be incorrect, but will be updated soon anyway
           highlighted: false,
@@ -508,6 +510,7 @@ class LTSInteractiveView
           expandable: false,
           terminal: false,
         };
+      console.log("bllaaa", this.states, JSON.stringify(this.states));
 
       // update properties of states
       for (const stateKey in this.states) {

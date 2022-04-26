@@ -1,16 +1,18 @@
 import { IconButton } from "@mui/material";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { ArrowBack } from "@mui/icons-material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import * as R from "ramda";
+import { select } from "d3";
 // import Flexbox from "react-svg-flexbox";
 
 import Header from "Header/Header";
 import styled from "styled-components";
 
+import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import ComparisionTable from "./ComparisonResultTable";
 import LTSViewer from "LTSViewer/LTSViewer";
@@ -101,6 +103,11 @@ const StyledLTSViewer = styled(LTSViewer)`
   }
 `;
 
+const StyledSvg = styled.svg`
+  width: ${LTS_WIDTH}px;
+  height: ${LTS_HEIGHT}px;
+`;
+
 const SpectroscopyResultComponent = ({
   result = [],
   processes: states,
@@ -108,6 +115,17 @@ const SpectroscopyResultComponent = ({
   result: SpectroscopyResult[];
   processes: { name: string; ccs: string }[];
 }) => {
+  const ltsRefs = useRef<LTSInteractiveView[]>([]);
+  const [tab, setTab] = useState(0);
+
+  const handleExpandAll = (lts: LTS) => {
+    console.log(ltsRefs);
+    for (let i = 0; i < Object.keys(lts.states).length; i++) {
+      if (ltsRefs.current[i]) {
+        (ltsRefs.current[i] as LTSInteractiveView).expandAllSingleStep();
+      }
+    }
+  };
   const ltsData = useMemo(
     () =>
       states.map(({ ccs, name }) =>
@@ -115,6 +133,10 @@ const SpectroscopyResultComponent = ({
       ),
     [states]
   );
+
+  useEffect(() => {
+    ltsData.forEach((lts) => handleExpandAll(lts));
+  }, [tab, ltsData]);
 
   const processNames = useMemo(
     () => states.map((state) => state.name),
@@ -131,10 +153,15 @@ const SpectroscopyResultComponent = ({
     }, result);
   }, [result, processNames]);
 
-  const [tab, setTab] = useState(0);
-
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
+    select("#test").remove();
+    select("#lts-comparision")
+      .append("circle")
+      .attr("id", "test")
+      .attr("cx", 100 * newValue)
+      .attr("cy", 100)
+      .attr("r", 10);
   };
 
   const renderTabLabel = (left: string, right: string, isActive: boolean) => (
@@ -144,7 +171,7 @@ const SpectroscopyResultComponent = ({
     </Row>
   );
 
-  const handleStateMouseOver = (stateKey: string) => {};
+  const handleStateClick = (stateKey: string) => {};
 
   return (
     <div className="App">
@@ -163,7 +190,35 @@ const SpectroscopyResultComponent = ({
           ))}
         </Row>
         <Row>
-          {ltsData.map((lts, i) => {
+          <StyledSvg>
+            {ltsData.map((lts, i) => {
+              const selected = R.path(
+                [tab, `${i === 0 ? "left" : "right"}`],
+                sortedResult
+              ) as string;
+              return (
+                <g transform={`translate(${i * 300 - 200}, 0)`}>
+                  <LTSInteractiveView
+                    lts={{
+                      ...lts,
+                      initialState: processNames.includes(selected)
+                        ? lts.initialState
+                        : getStateNameFromLTS(selected, lts as LTS) || "",
+                    }}
+                    width={LTS_WIDTH}
+                    height={LTS_HEIGHT}
+                    showExpandNotice={false}
+                    stickyNodes={false}
+                    directedExploration={false}
+                    shortWeakSteps={false}
+                    scale={0.5}
+                    ref={(el: LTSInteractiveView) => (ltsRefs.current[i] = el)}
+                  />
+                </g>
+              );
+            })}
+          </StyledSvg>
+          {/* {ltsData.map((lts, i) => {
             const selected = R.path(
               [tab, `${i === 0 ? "left" : "right"}`],
               sortedResult
@@ -181,7 +236,7 @@ const SpectroscopyResultComponent = ({
                 expandAll
               />
             );
-          })}
+          })} */}
         </Row>
         <Box sx={{ width: "100%", paddingBottom: "100px" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

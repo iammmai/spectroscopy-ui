@@ -46,7 +46,7 @@ const LTSViewer = ({
   return (
     <div className={className}>
       {!expandAll && <Button onClick={handleExpandAll}>Expand all</Button>}
-      <svg width={width} height={height}>
+      <svg width={width} height={height} id="lts-svg">
         <LTSInteractiveView
           lts={lts}
           width={width}
