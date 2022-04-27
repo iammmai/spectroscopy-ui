@@ -31,6 +31,7 @@ type LTSInteractiveViewAPI = {
   stop: () => void;
   restart: () => void;
   exportViewData: () => string;
+  getStateCoordinates: (stateKey: string) => { x: number; y: number };
 };
 
 export type LTSViewData = {
@@ -78,10 +79,8 @@ export type LTSInteractiveViewProps = {
   onErrorStateExpansionAttempt?: (stateKey: string, error: string) => void;
   onUnexploredExpansionAttempt?: (stateKey: string) => void;
   onExpansionStatusChange?: (status: LTSExpansionStatus) => void;
-  initialX?: number;
-  initialY?: number;
+  ref?: any;
 };
-
 const minBorderDistance = stateCircleSize;
 
 /**
@@ -500,8 +499,8 @@ class LTSInteractiveView
       // ensure at least the initial state exists
       if (!this.states[this.props.lts.initialState])
         this.states[this.props.lts.initialState] = {
-          x: this.props.initialX || 0,
-          y: this.props.initialY || 0,
+          x: 0,
+          y: 0,
           initial: true,
           // remaining properties may be incorrect, but will be updated soon anyway
           highlighted: false,
@@ -510,7 +509,6 @@ class LTSInteractiveView
           expandable: false,
           terminal: false,
         };
-      console.log("bllaaa", this.states, JSON.stringify(this.states));
 
       // update properties of states
       for (const stateKey in this.states) {
@@ -573,7 +571,10 @@ class LTSInteractiveView
     // called when props will change
     if (nextProps.lts === this.props.lts) {
       this.fullUpdateRequired = true; // trigger update once the update has actually happened
-    } else {
+    } else if (
+      // only full reset when deep equal fails
+      JSON.stringify(nextProps.lts) !== JSON.stringify(this.props.lts)
+    ) {
       this.fullResetRequired = true;
     }
   }
@@ -640,7 +641,13 @@ class LTSInteractiveView
     return JSON.stringify(exportData);
   };
 
+  getStateCoordinates = (stateKey: string) => {
+    const state = this.states[stateKey] || {};
+    return { x: state.x, y: state.y };
+  };
+
   componentDidMount = (): void => {
+    this.fullReset();
     this.force.on("tick", () => {
       const limitNodesByBorder = (nodes: ForceNode[]): void => {
         nodes.forEach((n) => {
@@ -667,12 +674,12 @@ class LTSInteractiveView
   };
 
   handleMouseOver = (stateKey: string) => {
-    this.states[stateKey] = { ...this.states[stateKey], highlighted: true };
+    // this.states[stateKey] = { ...this.states[stateKey], highlighted: true };
     this.props.onStateMouseOver && this.props.onStateMouseOver(stateKey);
   };
 
   handleMouseOut = (stateKey: string) => {
-    this.states[stateKey] = { ...this.states[stateKey], highlighted: false };
+    // this.states[stateKey] = { ...this.states[stateKey], highlighted: false };
     this.props.onStateMouseOut && this.props.onStateMouseOut(stateKey);
   };
 
@@ -688,10 +695,10 @@ class LTSInteractiveView
         onStateDragEnd={this.stateDragEnd}
         onStateClick={this.props.onStateClick || this.onStateClick}
         onStateRightClick={this.props.onStateRightClick}
-        // onStateMouseOver={this.props.onStateMouseOver}
-        onStateMouseOver={this.handleMouseOver}
-        // onStateMouseOut={this.props.onStateMouseOut}
-        onStateMouseOut={this.handleMouseOut}
+        onStateMouseOver={this.props.onStateMouseOver}
+        // onStateMouseOver={this.handleMouseOver}
+        onStateMouseOut={this.props.onStateMouseOut}
+        // onStateMouseOut={this.handleMouseOut}
         onTransitionMouseOver={this.props.onTransitionMouseOver}
         onTransitionMouseOut={this.props.onTransitionMouseOut}
       />

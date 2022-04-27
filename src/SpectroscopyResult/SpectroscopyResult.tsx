@@ -1,5 +1,5 @@
 import { IconButton } from "@mui/material";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { ArrowBack } from "@mui/icons-material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -57,8 +57,11 @@ const Tag = styled.div`
 const tagColors = ["#F2994A", "#6FCF97"];
 const grey = "#BDBDBD";
 
-const LTS_WIDTH = 800 as const;
+const LTS_WIDTH = window.innerWidth - 200;
 const LTS_HEIGHT = 400 as const;
+// const ltsOffset =
+const LEFT_SHIFT = LTS_WIDTH * 0.25;
+const LTS_OFFSET = LTS_WIDTH * 0.4;
 
 const formatCCS = (ccs: string) => ccs.replace(/[()\s]/g, "");
 
@@ -117,9 +120,13 @@ const SpectroscopyResultComponent = ({
 }) => {
   const ltsRefs = useRef<LTSInteractiveView[]>([]);
   const [tab, setTab] = useState(0);
+  const [tooltipCoordinates, setTooltipCoordinates] = useState<{
+    x?: number;
+    y?: number;
+  }>({});
+  const [hoverStateKey, setHoverStateKey] = useState();
 
   const handleExpandAll = (lts: LTS) => {
-    console.log(ltsRefs);
     for (let i = 0; i < Object.keys(lts.states).length; i++) {
       if (ltsRefs.current[i]) {
         (ltsRefs.current[i] as LTSInteractiveView).expandAllSingleStep();
@@ -171,7 +178,99 @@ const SpectroscopyResultComponent = ({
     </Row>
   );
 
-  const handleStateClick = (stateKey: string) => {};
+  const handleStateClick = (stateKey: string) => {
+    if (!R.isEmpty(ltsRefs.current)) {
+      const fromCoord = ltsRefs.current[0].getStateCoordinates(stateKey);
+      const toCoord = ltsRefs.current[1].getStateCoordinates(stateKey);
+      console.log("coord", fromCoord, toCoord);
+    }
+  };
+
+  const getInitialStateKey = (leftOrRight: "left" | "right") => {
+    const selectedKey = R.path([tab, leftOrRight], sortedResult) as string;
+    const index = leftOrRight === "left" ? 0 : 1;
+    return processNames.includes(selectedKey)
+      ? ltsData[index].initialState
+      : getStateNameFromLTS(selectedKey, ltsData[index] as LTS) || "";
+  };
+
+  const renderTooltip = () => {
+    return (
+      tooltipCoordinates.x &&
+      tooltipCoordinates.y && (
+        <g
+          transform={`translate(${tooltipCoordinates.x}, ${tooltipCoordinates.y})`}
+        >
+          <rect
+            width="200px"
+            height="100px"
+            fill="white"
+            stroke="black"
+            rx="15"
+          />
+          <text x="10px" y="30px">
+            SVG 1
+          </text>
+        </g>
+      )
+    );
+  };
+
+  const handleMouseOver = useCallback(
+    (stateKey: string) => {
+      ltsRefs.current.forEach((ref, i) => {
+        const coords = ref.getStateCoordinates(stateKey);
+        if (coords.x && coords.y) {
+          setTooltipCoordinates({
+            x: i * LTS_OFFSET + coords.x - LEFT_SHIFT,
+            y: coords.y,
+          });
+          return;
+        }
+      });
+    },
+    [setTooltipCoordinates, ltsRefs]
+  );
+
+  const handleMouseOut = useCallback(
+    (stateKey: string) => {
+      setTooltipCoordinates({});
+    },
+    [setTooltipCoordinates]
+  );
+
+  const renderLTS = useMemo(() => {
+    return (
+      <StyledSvg>
+        {ltsData.map((lts, i) => {
+          return (
+            <g transform={`translate(${i * LTS_OFFSET - LEFT_SHIFT}, 0)`}>
+              <LTSInteractiveView
+                lts={{
+                  ...lts,
+                  initialState: getInitialStateKey(
+                    `${i === 0 ? "left" : "right"}`
+                  ),
+                }}
+                width={LTS_WIDTH}
+                height={LTS_HEIGHT}
+                showExpandNotice={false}
+                stickyNodes={false}
+                directedExploration={false}
+                shortWeakSteps={false}
+                scale={0.5}
+                ref={(el: LTSInteractiveView) => (ltsRefs.current[i] = el)}
+                // onStateClick={handleStateClick}
+                onStateMouseOver={handleMouseOver}
+                onStateMouseOut={handleMouseOut}
+              />
+            </g>
+          );
+        })}
+        {renderTooltip()}
+      </StyledSvg>
+    );
+  }, [ltsData, tab, getInitialStateKey]);
 
   return (
     <div className="App">
@@ -189,55 +288,7 @@ const SpectroscopyResultComponent = ({
             <Tag color={tagColors[i]}>{`${process.name} = ${process.ccs}`}</Tag>
           ))}
         </Row>
-        <Row>
-          <StyledSvg>
-            {ltsData.map((lts, i) => {
-              const selected = R.path(
-                [tab, `${i === 0 ? "left" : "right"}`],
-                sortedResult
-              ) as string;
-              return (
-                <g transform={`translate(${i * 300 - 200}, 0)`}>
-                  <LTSInteractiveView
-                    lts={{
-                      ...lts,
-                      initialState: processNames.includes(selected)
-                        ? lts.initialState
-                        : getStateNameFromLTS(selected, lts as LTS) || "",
-                    }}
-                    width={LTS_WIDTH}
-                    height={LTS_HEIGHT}
-                    showExpandNotice={false}
-                    stickyNodes={false}
-                    directedExploration={false}
-                    shortWeakSteps={false}
-                    scale={0.5}
-                    ref={(el: LTSInteractiveView) => (ltsRefs.current[i] = el)}
-                  />
-                </g>
-              );
-            })}
-          </StyledSvg>
-          {/* {ltsData.map((lts, i) => {
-            const selected = R.path(
-              [tab, `${i === 0 ? "left" : "right"}`],
-              sortedResult
-            ) as string;
-            return (
-              <StyledLTSViewer
-                lts={{
-                  ...lts,
-                  initialState: processNames.includes(selected)
-                    ? lts.initialState
-                    : getStateNameFromLTS(selected, lts as LTS) || "",
-                }}
-                width={LTS_WIDTH / 2}
-                height={LTS_HEIGHT}
-                expandAll
-              />
-            );
-          })} */}
-        </Row>
+        <Row>{renderLTS}</Row>
         <Box sx={{ width: "100%", paddingBottom: "100px" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs value={tab} onChange={handleChange}>
