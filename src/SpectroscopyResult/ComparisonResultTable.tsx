@@ -6,7 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useMemo } from "react";
 
-import type { SpectroscopyResult } from "./SpectroscopyResult";
+import type { SpectroscopyViewResult } from "./SpectroscopyResult";
 
 const priceLabel = [
   "observations",
@@ -28,7 +28,7 @@ type ResultRow = {
   nH: number;
 };
 
-const ComparisionTable = ({ result }: { result: SpectroscopyResult }) => {
+const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
   const rows = useMemo(() => {
     return result.distinctions.map(({ formula, price, inequivalences }) => ({
       formula,

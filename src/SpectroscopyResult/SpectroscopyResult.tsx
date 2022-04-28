@@ -30,6 +30,19 @@ type Distinctions = {
   inequivalences: string[];
 };
 
+export type SpectroscopyViewResult = {
+  left: {
+    stateKey: string;
+    ccs: string;
+  };
+  right: {
+    stateKey: string;
+    ccs: string;
+  };
+  distinctions: Distinctions[];
+  preorderings: string[];
+};
+
 export type SpectroscopyResult = {
   left: string;
   right: string;
@@ -69,7 +82,7 @@ const getStateNameFromLTS = (ccs: string, LTS: LTS) => {
   const result = (Object.entries(LTS.states).find(
     (state) => formatCCS(ccs) === formatCCS((state[1] as any).ccs as string)
   ) || [])[0];
-  return result;
+  return result || "";
 };
 
 function TabPanel(props: TabPanelProps) {
@@ -133,7 +146,7 @@ const SpectroscopyResultComponent = ({
       }
     }
   };
-  const ltsData = useMemo(
+  const ltsData: LTS[] = useMemo(
     () =>
       states.map(({ ccs, name }) =>
         renameStates(transformToLTS(ccs), R.head(name), parseInt(R.tail(name)))
@@ -150,15 +163,47 @@ const SpectroscopyResultComponent = ({
     [states]
   );
 
-  const sortedResult = useMemo(() => {
-    return R.sort((a: { left: string }, b: { left: string }) => {
-      const leftProp = R.prop("left");
-      if (processNames.includes(leftProp(a))) {
+  const sortedResultView = useMemo(() => {
+    const sorted = R.sort((a: SpectroscopyResult, b: SpectroscopyResult) => {
+      const leftProp: (obj: any) => string | undefined = R.prop("left");
+      if (processNames.includes(leftProp(a) as string)) {
         return -Infinity;
       }
-      return leftProp(a).length - leftProp(b).length;
+      return (leftProp(a) || "").length - (leftProp(b) || "").length;
     }, result);
-  }, [result, processNames]);
+
+    return sorted.map((resultItem) => {
+      const initialStateLeft = R.find(
+        R.propEq("name", resultItem.left),
+        states
+      );
+      const initialStateRight = R.find(
+        R.propEq("name", resultItem.right),
+        states
+      );
+      return {
+        ...resultItem,
+        left: initialStateLeft
+          ? {
+              stateKey: initialStateLeft.name,
+              ccs: initialStateLeft.ccs,
+            }
+          : {
+              stateKey: getStateNameFromLTS(resultItem.left, ltsData[0]),
+              ccs: resultItem.left,
+            },
+        right: initialStateRight
+          ? {
+              stateKey: initialStateRight.name,
+              ccs: initialStateRight.ccs,
+            }
+          : {
+              stateKey: getStateNameFromLTS(resultItem.right, ltsData[1]),
+              ccs: resultItem.right as any,
+            },
+      };
+    });
+  }, [result, processNames, ltsData, states]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
@@ -178,23 +223,13 @@ const SpectroscopyResultComponent = ({
     </Row>
   );
 
-  const handleStateClick = (stateKey: string) => {
-    if (!R.isEmpty(ltsRefs.current)) {
-      const fromCoord = ltsRefs.current[0].getStateCoordinates(stateKey);
-      const toCoord = ltsRefs.current[1].getStateCoordinates(stateKey);
-      console.log("coord", fromCoord, toCoord);
-    }
-  };
+  const handleStateClick = (stateKey: string) => {};
 
   const getInitialStateKey = (leftOrRight: "left" | "right") => {
-    const selectedKey = R.path([tab, leftOrRight], sortedResult) as string;
-    const index = leftOrRight === "left" ? 0 : 1;
-    return processNames.includes(selectedKey)
-      ? ltsData[index].initialState
-      : getStateNameFromLTS(selectedKey, ltsData[index] as LTS) || "";
+    return R.path([tab, leftOrRight, "stateKey"], sortedResultView) as string;
   };
 
-  const renderTooltip = () => {
+  const renderTooltip = useCallback(() => {
     return (
       tooltipCoordinates.x &&
       tooltipCoordinates.y && (
@@ -214,7 +249,7 @@ const SpectroscopyResultComponent = ({
         </g>
       )
     );
-  };
+  }, [tooltipCoordinates]);
 
   const handleMouseOver = useCallback(
     (stateKey: string) => {
@@ -239,38 +274,47 @@ const SpectroscopyResultComponent = ({
     [setTooltipCoordinates]
   );
 
-  const renderLTS = useMemo(() => {
+  const renderLTS = useCallback(
+    (leftOrRight: "left" | "right") => {
+      const initialStateKey = getInitialStateKey(leftOrRight);
+      const lts = R.find(R.hasPath(["states", initialStateKey]))(ltsData);
+      const index = leftOrRight === "left" ? 0 : 1;
+      return (
+        <g transform={`translate(${index * LTS_OFFSET - LEFT_SHIFT}, 0)`}>
+          <LTSInteractiveView
+            lts={
+              {
+                ...lts,
+                initialState: initialStateKey,
+              } as LTS
+            }
+            width={LTS_WIDTH}
+            height={LTS_HEIGHT}
+            showExpandNotice={false}
+            stickyNodes={false}
+            directedExploration={false}
+            shortWeakSteps={false}
+            scale={0.5}
+            ref={(el: LTSInteractiveView) => (ltsRefs.current[index] = el)}
+            // onStateClick={handleStateClick}
+            onStateMouseOver={handleMouseOver}
+            onStateMouseOut={handleMouseOut}
+          />
+        </g>
+      );
+    },
+    [ltsData, getInitialStateKey]
+  );
+
+  const renderLTSData = useMemo(() => {
     return (
       <StyledSvg>
-        {ltsData.map((lts, i) => {
-          return (
-            <g transform={`translate(${i * LTS_OFFSET - LEFT_SHIFT}, 0)`}>
-              <LTSInteractiveView
-                lts={{
-                  ...lts,
-                  initialState: getInitialStateKey(
-                    `${i === 0 ? "left" : "right"}`
-                  ),
-                }}
-                width={LTS_WIDTH}
-                height={LTS_HEIGHT}
-                showExpandNotice={false}
-                stickyNodes={false}
-                directedExploration={false}
-                shortWeakSteps={false}
-                scale={0.5}
-                ref={(el: LTSInteractiveView) => (ltsRefs.current[i] = el)}
-                // onStateClick={handleStateClick}
-                onStateMouseOver={handleMouseOver}
-                onStateMouseOut={handleMouseOut}
-              />
-            </g>
-          );
-        })}
+        {renderLTS("left")}
+        {renderLTS("right")}
         {renderTooltip()}
       </StyledSvg>
     );
-  }, [ltsData, tab, getInitialStateKey]);
+  }, [renderLTS, renderTooltip]);
 
   return (
     <div className="App">
@@ -288,23 +332,27 @@ const SpectroscopyResultComponent = ({
             <Tag color={tagColors[i]}>{`${process.name} = ${process.ccs}`}</Tag>
           ))}
         </Row>
-        <Row>{renderLTS}</Row>
+        <Row>{renderLTSData}</Row>
         <Box sx={{ width: "100%", paddingBottom: "100px" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs value={tab} onChange={handleChange}>
-              {sortedResult.map(({ left, right }, i) => (
+              {sortedResultView.map(({ left, right }, i) => (
                 <Tab
-                  key={left + right}
-                  label={renderTabLabel(left, right, tab === i)}
+                  key={left.stateKey + right.stateKey}
+                  label={renderTabLabel(
+                    left.stateKey,
+                    right.stateKey,
+                    tab === i
+                  )}
                   {...a11yProps(1)}
                 />
               ))}
             </Tabs>
           </Box>
-          {sortedResult.map((resultItem, i) => (
+          {sortedResultView.map((resultItem, i) => (
             <TabPanel value={tab} index={i}>
               <ComparisionTable
-                key={resultItem.left + resultItem.right}
+                key={resultItem.left.stateKey + resultItem.right.stateKey}
                 result={resultItem}
               />
             </TabPanel>
