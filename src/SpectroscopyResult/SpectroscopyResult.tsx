@@ -67,6 +67,7 @@ const Tag = styled.div`
   padding: 2px 5px;
   align-items: center;
 `;
+
 const tagColors = ["#F2994A", "#6FCF97"];
 const grey = "#BDBDBD";
 
@@ -84,6 +85,19 @@ const getStateNameFromLTS = (ccs: string, LTS: LTS) => {
   ) || [])[0];
   return result || "";
 };
+
+const getResultDistinctions = R.pipe<
+  [SpectroscopyViewResult],
+  Distinctions[],
+  string[][],
+  string[],
+  string[]
+>(
+  R.prop("distinctions"),
+  R.map((distinction) => distinction.inequivalences),
+  R.flatten,
+  R.uniq
+);
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -112,16 +126,13 @@ function a11yProps(index: number) {
   };
 }
 
-const StyledLTSViewer = styled(LTSViewer)`
-  .state-border {
-    stroke: black;
-    /* fill: red; */
-  }
-`;
-
 const StyledSvg = styled.svg`
   width: ${LTS_WIDTH}px;
   height: ${LTS_HEIGHT}px;
+`;
+
+const TooltipText = styled.span`
+  font-size: 12px;
 `;
 
 const SpectroscopyResultComponent = ({
@@ -137,7 +148,7 @@ const SpectroscopyResultComponent = ({
     x?: number;
     y?: number;
   }>({});
-  const [hoverStateKey, setHoverStateKey] = useState();
+  const [hoverStateKey, setHoverStateKey] = useState<string | null>(null);
 
   const handleExpandAll = (lts: LTS) => {
     for (let i = 0; i < Object.keys(lts.states).length; i++) {
@@ -207,13 +218,6 @@ const SpectroscopyResultComponent = ({
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
-    select("#test").remove();
-    select("#lts-comparision")
-      .append("circle")
-      .attr("id", "test")
-      .attr("cx", 100 * newValue)
-      .attr("cy", 100)
-      .attr("r", 10);
   };
 
   const renderTabLabel = (left: string, right: string, isActive: boolean) => (
@@ -223,16 +227,48 @@ const SpectroscopyResultComponent = ({
     </Row>
   );
 
-  const handleStateClick = (stateKey: string) => {};
+  const handleStateClick = (stateKey: string) => {
+    const selectedTab = R.findIndex(R.pathEq(["left", "stateKey"], stateKey))(
+      sortedResultView
+    );
+    setTab(selectedTab);
+  };
 
   const getInitialStateKey = (leftOrRight: "left" | "right") => {
     return R.path([tab, leftOrRight, "stateKey"], sortedResultView) as string;
   };
 
+  const renderTooltipText = (result: SpectroscopyViewResult) => {
+    if (result.preorderings.includes("bisimulation")) {
+      return (
+        <TooltipText>
+          {`${result.left.stateKey} and ${result.right.stateKey} are bisimilar`}
+        </TooltipText>
+      );
+    }
+    const distinctions = getResultDistinctions(result);
+    return (
+      R.not(R.isEmpty(distinctions)) && (
+        <TooltipText>
+          {`${(result as SpectroscopyViewResult).left.stateKey} distinguished
+          from ${
+            (result as SpectroscopyViewResult).right.stateKey
+          } under ${R.join(", ")(distinctions)}`}
+        </TooltipText>
+      )
+    );
+  };
+
   const renderTooltip = useCallback(() => {
+    const result = R.find(R.pathEq(["left", "stateKey"], hoverStateKey))(
+      sortedResultView
+    );
+
+    const tooltipText = result && renderTooltipText(result);
     return (
       tooltipCoordinates.x &&
-      tooltipCoordinates.y && (
+      tooltipCoordinates.y &&
+      tooltipText && (
         <g
           transform={`translate(${tooltipCoordinates.x}, ${tooltipCoordinates.y})`}
         >
@@ -243,13 +279,13 @@ const SpectroscopyResultComponent = ({
             stroke="black"
             rx="15"
           />
-          <text x="10px" y="30px">
-            SVG 1
-          </text>
+          <foreignObject x="7px" y="7px" width="180px" height="90px">
+            {tooltipText}
+          </foreignObject>
         </g>
       )
     );
-  }, [tooltipCoordinates]);
+  }, [tooltipCoordinates, hoverStateKey, sortedResultView]);
 
   const handleMouseOver = useCallback(
     (stateKey: string) => {
@@ -263,6 +299,7 @@ const SpectroscopyResultComponent = ({
           return;
         }
       });
+      setHoverStateKey(stateKey);
     },
     [setTooltipCoordinates, ltsRefs]
   );
@@ -270,6 +307,7 @@ const SpectroscopyResultComponent = ({
   const handleMouseOut = useCallback(
     (stateKey: string) => {
       setTooltipCoordinates({});
+      setHoverStateKey(null);
     },
     [setTooltipCoordinates]
   );
@@ -296,7 +334,7 @@ const SpectroscopyResultComponent = ({
             shortWeakSteps={false}
             scale={0.5}
             ref={(el: LTSInteractiveView) => (ltsRefs.current[index] = el)}
-            // onStateClick={handleStateClick}
+            onStateClick={handleStateClick}
             onStateMouseOver={handleMouseOver}
             onStateMouseOut={handleMouseOut}
           />
@@ -351,6 +389,14 @@ const SpectroscopyResultComponent = ({
           </Box>
           {sortedResultView.map((resultItem, i) => (
             <TabPanel value={tab} index={i}>
+              <Row>
+                <Tag
+                  color={tagColors[0]}
+                >{`${resultItem.left.stateKey} = ${resultItem.left.ccs}`}</Tag>
+                <Tag
+                  color={tagColors[1]}
+                >{`${resultItem.right.stateKey} = ${resultItem.right.ccs}`}</Tag>
+              </Row>
               <ComparisionTable
                 key={resultItem.left.stateKey + resultItem.right.stateKey}
                 result={resultItem}
