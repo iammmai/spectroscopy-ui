@@ -1,5 +1,5 @@
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { parser } from "@pseuco/ccs-interpreter";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import IconButton from "@mui/material/IconButton";
@@ -32,11 +32,15 @@ const LTSCard = ({
   ) => void;
   selectedStates?: string[];
 }) => {
+  const [errorMsg, setErrorMsg] = useState<string | undefined>(undefined);
   const handleUpdateCCS = (ccs: string) => {
     try {
+      setErrorMsg(undefined);
       parser.parse(ccs);
       onUpdateCCS(ccs);
-    } catch (error) {}
+    } catch (error) {
+      setErrorMsg("Invalid ccs");
+    }
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,6 +59,7 @@ const LTSCard = ({
           value={ccs}
           onChange={debounceOnChange}
           prefix={`${label} =`}
+          errorMsg={errorMsg}
         />
         <IconButton onClick={onRemove}>
           <DeleteOutlineIcon />

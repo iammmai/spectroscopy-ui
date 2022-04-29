@@ -14,6 +14,7 @@ const EditableTitle = ({
   variant = "body1",
   placeholder,
   showEditOnHover = false,
+  errorMsg,
 }: {
   inputLabel: string;
   prefix?: string;
@@ -22,6 +23,7 @@ const EditableTitle = ({
   variant?: "h4" | "body1" | "h5" | "h6";
   placeholder?: string;
   showEditOnHover?: boolean;
+  errorMsg?: string;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isEditVisible, setIsEditVisible] = useState(false);
@@ -62,6 +64,8 @@ const EditableTitle = ({
       label={inputLabel}
       fullWidth
       placeholder={placeholder}
+      error={errorMsg ? true : false}
+      helperText={errorMsg}
     />
   ) : (
     <div
