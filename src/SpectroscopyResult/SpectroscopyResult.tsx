@@ -6,7 +6,6 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import * as R from "ramda";
-import { select } from "d3";
 // import Flexbox from "react-svg-flexbox";
 
 import Header from "Header/Header";
@@ -15,8 +14,8 @@ import styled from "styled-components";
 import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import ComparisionTable from "./ComparisonResultTable";
-import LTSViewer from "LTSViewer/LTSViewer";
 import { renameStates, transformToLTS } from "utils/ltsConversion";
+import Arrow from "utils/arrowSvg";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -149,6 +148,7 @@ const SpectroscopyResultComponent = ({
     y?: number;
   }>({});
   const [hoverStateKey, setHoverStateKey] = useState<string | null>(null);
+  const [isArrowVisible, setIsArrowVisible] = useState<boolean>(false);
 
   const handleExpandAll = (lts: LTS) => {
     for (let i = 0; i < Object.keys(lts.states).length; i++) {
@@ -218,6 +218,7 @@ const SpectroscopyResultComponent = ({
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
+    setIsArrowVisible(false);
   };
 
   const renderTabLabel = (left: string, right: string, isActive: boolean) => (
@@ -253,7 +254,7 @@ const SpectroscopyResultComponent = ({
           {`${(result as SpectroscopyViewResult).left.stateKey} distinguished
           from ${
             (result as SpectroscopyViewResult).right.stateKey
-          } under ${R.join(", ")(distinctions)}`}
+          } under ${R.join(", ")(distinctions)} preorder.`}
         </TooltipText>
       )
     );
@@ -287,22 +288,30 @@ const SpectroscopyResultComponent = ({
     );
   }, [tooltipCoordinates, hoverStateKey, sortedResultView]);
 
-  const handleMouseOver = useCallback(
-    (stateKey: string) => {
-      ltsRefs.current.forEach((ref, i) => {
+  const getCoordinates = (stateKey: string) => {
+    return R.find<any>(R.compose(R.not, R.isNil))(
+      ltsRefs.current.map((ref, i) => {
         const coords = ref.getStateCoordinates(stateKey);
-        if (coords.x && coords.y) {
-          setTooltipCoordinates({
-            x: i * LTS_OFFSET + coords.x - LEFT_SHIFT,
-            y: coords.y,
-          });
-          return;
-        }
-      });
-      setHoverStateKey(stateKey);
-    },
-    [setTooltipCoordinates, ltsRefs]
-  );
+        return coords.x && coords.y
+          ? {
+              x: i * LTS_OFFSET + coords.x - LEFT_SHIFT,
+              y: coords.y,
+            }
+          : undefined;
+      })
+    );
+  };
+
+  const handleMouseOver = useCallback((stateKey: string) => {
+    ltsRefs.current.forEach((ref, i) => {
+      const coords = ref.getStateCoordinates(stateKey);
+      if (coords.x && coords.y) {
+        setTooltipCoordinates(getCoordinates(stateKey));
+        return;
+      }
+    });
+    setHoverStateKey(stateKey);
+  }, []);
 
   const handleMouseOut = useCallback(
     (stateKey: string) => {
@@ -312,6 +321,8 @@ const SpectroscopyResultComponent = ({
     [setTooltipCoordinates]
   );
 
+  // TODO: add a callback, that sets some state whenever a full Update was done by the LTSInteractive view
+  // then whenever full update was done, draw the arrow
   const renderLTS = useCallback(
     (leftOrRight: "left" | "right") => {
       const initialStateKey = getInitialStateKey(leftOrRight);
@@ -344,15 +355,36 @@ const SpectroscopyResultComponent = ({
     [ltsData, getInitialStateKey]
   );
 
-  const renderLTSData = useMemo(() => {
+  const renderPreorderArrow = (result: SpectroscopyViewResult) => {
+    const fromCoord = tooltipCoordinates;
+    const toCoord = getCoordinates(result.right.stateKey);
+    return (
+      !R.isEmpty(fromCoord) &&
+      toCoord && (
+        <Arrow
+          from={fromCoord as { x: number; y: number }}
+          to={toCoord}
+          label={result.preorderings.join(",")}
+        />
+      )
+    );
+  };
+
+  const renderLTSData = () => {
+    const result = R.find(R.pathEq(["left", "stateKey"], hoverStateKey))(
+      sortedResultView
+    );
+
+    console.log("isArrowVisble", isArrowVisible);
     return (
       <StyledSvg>
         {renderLTS("left")}
         {renderLTS("right")}
+        {result && renderPreorderArrow(result)}
         {renderTooltip()}
       </StyledSvg>
     );
-  }, [renderLTS, renderTooltip]);
+  };
 
   return (
     <div className="App">
@@ -370,7 +402,7 @@ const SpectroscopyResultComponent = ({
             <Tag color={tagColors[i]}>{`${process.name} = ${process.ccs}`}</Tag>
           ))}
         </Row>
-        <Row>{renderLTSData}</Row>
+        <Row>{renderLTSData()}</Row>
         <Box sx={{ width: "100%", paddingBottom: "100px" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs value={tab} onChange={handleChange}>

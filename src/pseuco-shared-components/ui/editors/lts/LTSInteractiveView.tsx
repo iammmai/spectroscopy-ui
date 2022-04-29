@@ -79,7 +79,6 @@ export type LTSInteractiveViewProps = {
   onErrorStateExpansionAttempt?: (stateKey: string, error: string) => void;
   onUnexploredExpansionAttempt?: (stateKey: string) => void;
   onExpansionStatusChange?: (status: LTSExpansionStatus) => void;
-  ref?: any;
 };
 const minBorderDistance = stateCircleSize;
 
@@ -551,6 +550,7 @@ class LTSInteractiveView
       callOrIgnore(this.props.onExpansionStatusChange, newStatus);
       this.lastReportedExpansionState = newStatus;
     }
+
   };
 
   /**
