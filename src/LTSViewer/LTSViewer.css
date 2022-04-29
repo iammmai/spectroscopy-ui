@@ -8,6 +8,11 @@
   fill: white;
 }
 
+.state-border-selected {
+  stroke: black;
+  fill: #56ccf2;
+}
+
 .state-label {
   font-size: 12px;
 }

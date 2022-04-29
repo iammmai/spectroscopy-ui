@@ -79,6 +79,7 @@ export type LTSInteractiveViewProps = {
   onErrorStateExpansionAttempt?: (stateKey: string, error: string) => void;
   onUnexploredExpansionAttempt?: (stateKey: string) => void;
   onExpansionStatusChange?: (status: LTSExpansionStatus) => void;
+  selectedKeys?: string[];
 };
 const minBorderDistance = stateCircleSize;
 
@@ -550,7 +551,6 @@ class LTSInteractiveView
       callOrIgnore(this.props.onExpansionStatusChange, newStatus);
       this.lastReportedExpansionState = newStatus;
     }
-
   };
 
   /**
@@ -673,16 +673,6 @@ class LTSInteractiveView
     this.stop();
   };
 
-  handleMouseOver = (stateKey: string) => {
-    // this.states[stateKey] = { ...this.states[stateKey], highlighted: true };
-    this.props.onStateMouseOver && this.props.onStateMouseOver(stateKey);
-  };
-
-  handleMouseOut = (stateKey: string) => {
-    // this.states[stateKey] = { ...this.states[stateKey], highlighted: false };
-    this.props.onStateMouseOut && this.props.onStateMouseOut(stateKey);
-  };
-
   render(): ReactNode {
     return (
       <LTSSVGFragmentView
@@ -694,13 +684,12 @@ class LTSInteractiveView
         onStateDrag={this.stateDrag}
         onStateDragEnd={this.stateDragEnd}
         onStateClick={this.props.onStateClick || this.onStateClick}
-        onStateRightClick={this.props.onStateRightClick}
+        // onStateRightClick={this.props.onStateRightClick}
         onStateMouseOver={this.props.onStateMouseOver}
-        // onStateMouseOver={this.handleMouseOver}
         onStateMouseOut={this.props.onStateMouseOut}
-        // onStateMouseOut={this.handleMouseOut}
         onTransitionMouseOver={this.props.onTransitionMouseOver}
         onTransitionMouseOut={this.props.onTransitionMouseOut}
+        selectedKeys={this.props.selectedKeys}
       />
     );
   }

@@ -230,7 +230,9 @@ const SpectroscopyResultComponent = ({
     const selectedTab = R.findIndex(R.pathEq(["left", "stateKey"], stateKey))(
       sortedResultView
     );
-    setTab(selectedTab);
+    if (selectedTab >= 0) {
+      setTab(selectedTab);
+    }
   };
 
   const getInitialStateKey = (leftOrRight: "left" | "right") => {

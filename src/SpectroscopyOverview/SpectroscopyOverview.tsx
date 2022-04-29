@@ -195,6 +195,7 @@ function SpectroscopyOverview() {
                     lts={process.lts}
                     onRemove={handleDeleteProcess(process._id)}
                     onStateClick={handleOnStateClick(process._id)}
+                    selectedStates={selectedStates.map((state) => state.key)}
                   />
                 )
               )}

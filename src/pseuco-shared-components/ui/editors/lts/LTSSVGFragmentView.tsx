@@ -77,6 +77,7 @@ const LTSSVGFragmentView: React.FC<{
   onStateDragStart?: (stateKey: string, x: number, y: number) => void;
   onStateDrag?: (stateKey: string, x: number, y: number) => void;
   onStateDragEnd?: (stateKey: string, x: number, y: number) => void;
+  selectedKeys?: string[];
 }> = ({
   states,
   transitions,
@@ -91,6 +92,7 @@ const LTSSVGFragmentView: React.FC<{
   onStateDragStart,
   onStateDrag,
   onStateDragEnd,
+  selectedKeys = [],
 }) => {
   // set up decoration definition
   // Chrome does not like it if we have two SVG elements with the same marker definition at the same time
@@ -98,6 +100,24 @@ const LTSSVGFragmentView: React.FC<{
   const [arrowHeadId] = React.useState<string>(
     `transition-arrowhead-${Math.random().toString().slice(2, 14)}`
   );
+  const [selectedStateKey, setSelectedStateKey] = React.useState<string | null>(
+    null
+  );
+
+  const handleMouseOver = (stateKey: string) => {
+    setSelectedStateKey(stateKey);
+    onStateMouseOver && onStateMouseOver(stateKey);
+  };
+
+  const handleMouseOut = (stateKey: string) => {
+    setSelectedStateKey(null);
+    onStateMouseOut && onStateMouseOut(stateKey);
+  };
+
+  const handleStateClick = (stateKey: string) => {
+    setSelectedStateKey(stateKey);
+    onStateClick && onStateClick(stateKey);
+  };
 
   // define a memoizer for each callback
   const [onStateClickCallbackMemoizer] = React.useState(
@@ -250,7 +270,7 @@ const LTSSVGFragmentView: React.FC<{
               transform: `translate(${state.x}, ${state.y})`,
               onClick: onStateClickCallbackMemoizer.getCallback(
                 stateKey,
-                onStateClick
+                handleStateClick
               ),
               onContextMenu: onStateRightClickCallbackMemoizer.getCallback(
                 stateKey,
@@ -258,11 +278,11 @@ const LTSSVGFragmentView: React.FC<{
               ),
               onMouseOver: onStateMouseOverCallbackMemoizer.getCallback(
                 stateKey,
-                onStateMouseOver
+                handleMouseOver
               ),
               onMouseOut: onStateMouseOutCallbackMemoizer.getCallback(
                 stateKey,
-                onStateMouseOut
+                handleMouseOut
               ),
             }}
             key={stateKey}
@@ -286,7 +306,14 @@ const LTSSVGFragmentView: React.FC<{
                 className="state-highlight"
               />
             ) : null}
-            <circle r={stateCircleSize(scale)} className="state-border" />
+            <circle
+              r={stateCircleSize(scale)}
+              className={`state-border${
+                selectedStateKey === stateKey || selectedKeys.includes(stateKey)
+                  ? "-selected"
+                  : ""
+              }`}
+            />
             <text className="state-label" textAnchor="middle" dy="0.4em">
               {stateKey}
             </text>

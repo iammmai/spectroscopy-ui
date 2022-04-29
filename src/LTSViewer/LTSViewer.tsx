@@ -16,6 +16,7 @@ const LTSViewer = ({
   width = size,
   height = size,
   className,
+  selectedStates,
 }: {
   lts: LTS;
   onStateClick?: (
@@ -26,6 +27,7 @@ const LTSViewer = ({
   width?: number;
   height?: number;
   className?: string;
+  selectedStates?: string[];
 }) => {
   const ref = useRef(null);
 
@@ -58,6 +60,7 @@ const LTSViewer = ({
           scale={0.5}
           ref={ref}
           onStateClick={onStateClick}
+          selectedKeys={selectedStates}
         />
       </svg>
     </div>
