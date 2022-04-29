@@ -231,7 +231,6 @@ function SpectroscopyOverview() {
                 Process
               </Button>
             )}
-            {/* <EquivalenceHierarchy equivalences={["failure", "traces"]} /> */}
           </>
         )}
       </div>
