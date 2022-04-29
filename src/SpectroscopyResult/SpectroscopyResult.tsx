@@ -148,7 +148,6 @@ const SpectroscopyResultComponent = ({
     y?: number;
   }>({});
   const [hoverStateKey, setHoverStateKey] = useState<string | null>(null);
-  const [isArrowVisible, setIsArrowVisible] = useState<boolean>(false);
 
   const handleExpandAll = (lts: LTS) => {
     for (let i = 0; i < Object.keys(lts.states).length; i++) {
@@ -218,7 +217,6 @@ const SpectroscopyResultComponent = ({
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
-    setIsArrowVisible(false);
   };
 
   const renderTabLabel = (left: string, right: string, isActive: boolean) => (
@@ -375,7 +373,6 @@ const SpectroscopyResultComponent = ({
       sortedResultView
     );
 
-    console.log("isArrowVisble", isArrowVisible);
     return (
       <StyledSvg>
         {renderLTS("left")}
