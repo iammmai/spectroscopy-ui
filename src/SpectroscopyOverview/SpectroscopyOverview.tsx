@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -36,6 +36,8 @@ const initialNewProcessState = {
 
 function SpectroscopyOverview() {
   let { id } = useParams();
+  let navigate = useNavigate();
+
   const queryClient = useQueryClient();
   const [showAddProcess, setShowAddProcess] = useState(false);
   const [newProcess, setNewProcess] = useState<{
@@ -152,12 +154,22 @@ function SpectroscopyOverview() {
     );
   };
 
+  const handleCompare = () => {
+    navigate(
+      `../${id}/result?left=${selectedStates[0].key}&right=${selectedStates[1].key}`
+    );
+  };
+
   if (error) return <>"An error has occurred:jmh "</>;
 
   return (
     <div className="App">
       <Header />
-      <Settingsbar selectedStates={selectedStates} onTagClose={deselectState} />
+      <Settingsbar
+        selectedStates={selectedStates}
+        onTagClose={deselectState}
+        onCompare={handleCompare}
+      />
       <div className="content-container">
         {isLoading ? (
           <CircularProgress />

@@ -59,9 +59,11 @@ const StyledSelect = styled(Select)`
 const Settingsbar = ({
   selectedStates = [],
   onTagClose,
+  onCompare,
 }: {
   selectedStates: { id: string; key: string }[];
   onTagClose: (state: { id: string; key: string }) => void;
+  onCompare: () => void;
 }) => {
   const [selectedEquivalences, setEquivalences] = useState<string[] | []>([]);
 
@@ -113,8 +115,9 @@ const Settingsbar = ({
           disabled={
             selectedStates.length < 2 || selectedEquivalences.length === 0
           }
+          onClick={onCompare}
         >
-          Examine
+          Compare
         </Button>
       </FormControl>
     </StyledDiv>

@@ -1,12 +1,14 @@
 import { IconButton } from "@mui/material";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useQuery } from "react-query";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
+import CircularProgress from "@mui/material/CircularProgress";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import * as R from "ramda";
-// import Flexbox from "react-svg-flexbox";
 
 import Header from "Header/Header";
 import styled from "styled-components";
@@ -16,6 +18,8 @@ import { LTS } from "../pseuco-shared-components/lts/lts";
 import ComparisionTable from "./ComparisonResultTable";
 import { renameStates, transformToLTS } from "utils/ltsConversion";
 import Arrow from "utils/arrowSvg";
+import { useQueryParams } from "utils/hooks";
+import api from "api";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -76,6 +80,12 @@ const LTS_HEIGHT = 400 as const;
 const LEFT_SHIFT = LTS_WIDTH * 0.25;
 const LTS_OFFSET = LTS_WIDTH * 0.4;
 
+const EMPTY_RESULT = {
+  left: "",
+  right: "",
+  distinctions: [],
+  preorderings: [],
+};
 const formatCCS = (ccs: string) => ccs.replace(/[()\s]/g, "");
 
 const getStateNameFromLTS = (ccs: string, LTS: LTS) => {
@@ -84,6 +94,9 @@ const getStateNameFromLTS = (ccs: string, LTS: LTS) => {
   ) || [])[0];
   return result || "";
 };
+
+const pickLTS = (prefix: string) =>
+  R.find((lts: LTS) => R.head(prefix) === R.head(lts.initialState));
 
 const getResultDistinctions = R.pipe<
   [SpectroscopyViewResult],
@@ -134,13 +147,14 @@ const TooltipText = styled.span`
   font-size: 12px;
 `;
 
-const SpectroscopyResultComponent = ({
-  result = [],
-  processes: states,
-}: {
-  result: SpectroscopyResult[];
-  processes: { name: string; ccs: string }[];
-}) => {
+const SpectroscopyResultComponent = () => {
+  let navigate = useNavigate();
+  const { id } = useParams();
+
+  const query = useQueryParams();
+  const left = query.get("left");
+  const right = query.get("right");
+
   const ltsRefs = useRef<LTSInteractiveView[]>([]);
   const [tab, setTab] = useState(0);
   const [tooltipCoordinates, setTooltipCoordinates] = useState<{
@@ -148,6 +162,44 @@ const SpectroscopyResultComponent = ({
     y?: number;
   }>({});
   const [hoverStateKey, setHoverStateKey] = useState<string | null>(null);
+
+  const { isLoading, error, data, isSuccess } = useQuery(
+    "spectroscopyResult",
+    async () => {
+      return await api.get(
+        `/spectroscopy/${id}/compare?left=${left}&right=${right}`
+      );
+    }
+  );
+
+  const result = useMemo(
+    () =>
+      isSuccess
+        ? (R.path(["data", "result"])(data as any) as SpectroscopyResult[])
+        : [EMPTY_RESULT],
+    [data, isSuccess]
+  );
+
+  const states = useMemo(
+    () =>
+      isSuccess && left && right
+        ? [
+            {
+              name: left,
+              ccs: R.path<any>(["data", "leftLTS", "states", left, "ccs"])(
+                data
+              ) as string,
+            },
+            {
+              name: right,
+              ccs: R.path<any>(["data", "rightLTS", "states", right, "ccs"])(
+                data
+              ) as string,
+            },
+          ]
+        : [],
+    [data, isSuccess]
+  );
 
   const handleExpandAll = (lts: LTS) => {
     for (let i = 0; i < Object.keys(lts.states).length; i++) {
@@ -158,9 +210,15 @@ const SpectroscopyResultComponent = ({
   };
   const ltsData: LTS[] = useMemo(
     () =>
-      states.map(({ ccs, name }) =>
-        renameStates(transformToLTS(ccs), R.head(name), parseInt(R.tail(name)))
-      ),
+      R.isEmpty(states)
+        ? []
+        : states.map(({ ccs, name }) =>
+            renameStates(
+              transformToLTS(ccs),
+              R.head(name),
+              parseInt(R.tail(name))
+            )
+          ),
     [states]
   );
 
@@ -174,6 +232,7 @@ const SpectroscopyResultComponent = ({
   );
 
   const sortedResultView = useMemo(() => {
+    if (R.isEmpty(states)) return [];
     const sorted = R.sort((a: SpectroscopyResult, b: SpectroscopyResult) => {
       const leftProp: (obj: any) => string | undefined = R.prop("left");
       if (processNames.includes(leftProp(a) as string)) {
@@ -183,34 +242,20 @@ const SpectroscopyResultComponent = ({
     }, result);
 
     return sorted.map((resultItem) => {
-      const initialStateLeft = R.find(
-        R.propEq("name", resultItem.left),
-        states
-      );
-      const initialStateRight = R.find(
-        R.propEq("name", resultItem.right),
-        states
-      );
       return {
         ...resultItem,
-        left: initialStateLeft
-          ? {
-              stateKey: initialStateLeft.name,
-              ccs: initialStateLeft.ccs,
-            }
-          : {
-              stateKey: getStateNameFromLTS(resultItem.left, ltsData[0]),
-              ccs: resultItem.left,
-            },
-        right: initialStateRight
-          ? {
-              stateKey: initialStateRight.name,
-              ccs: initialStateRight.ccs,
-            }
-          : {
-              stateKey: getStateNameFromLTS(resultItem.right, ltsData[1]),
-              ccs: resultItem.right as any,
-            },
+        left: {
+          stateKey: resultItem.left,
+          ccs: R.path(["states", resultItem.left, "ccs"])(
+            pickLTS(R.head(resultItem.left))(ltsData)
+          ) as string,
+        },
+        right: {
+          stateKey: resultItem.right,
+          ccs: R.path(["states", resultItem.right, "ccs"])(
+            pickLTS(R.head(resultItem.right))(ltsData)
+          ) as string,
+        },
       };
     });
   }, [result, processNames, ltsData, states]);
@@ -389,52 +434,61 @@ const SpectroscopyResultComponent = ({
     <div className="App">
       <Header />
       <Row>
-        <IconButton>
+        <IconButton onClick={() => navigate(`../${id}`)}>
           <ArrowBack />
         </IconButton>
         <span>Back to overview</span>
       </Row>
       <div className="content-container">
-        <Row>
-          <span>Comparing states:</span>
-          {states.map((process, i) => (
-            <Tag color={tagColors[i]}>{`${process.name} = ${process.ccs}`}</Tag>
-          ))}
-        </Row>
-        <Row>{renderLTSData()}</Row>
-        <Box sx={{ width: "100%", paddingBottom: "100px" }}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs value={tab} onChange={handleChange}>
-              {sortedResultView.map(({ left, right }, i) => (
-                <Tab
-                  key={left.stateKey + right.stateKey}
-                  label={renderTabLabel(
-                    left.stateKey,
-                    right.stateKey,
-                    tab === i
-                  )}
-                  {...a11yProps(1)}
-                />
+        {isLoading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <Row>
+              <span>Comparing states:</span>
+              {states.map((process, i) => (
+                <Tag
+                  color={tagColors[i]}
+                >{`${process.name} = ${process.ccs}`}</Tag>
               ))}
-            </Tabs>
-          </Box>
-          {sortedResultView.map((resultItem, i) => (
-            <TabPanel value={tab} index={i}>
-              <Row>
-                <Tag
-                  color={tagColors[0]}
-                >{`${resultItem.left.stateKey} = ${resultItem.left.ccs}`}</Tag>
-                <Tag
-                  color={tagColors[1]}
-                >{`${resultItem.right.stateKey} = ${resultItem.right.ccs}`}</Tag>
-              </Row>
-              <ComparisionTable
-                key={resultItem.left.stateKey + resultItem.right.stateKey}
-                result={resultItem}
-              />
-            </TabPanel>
-          ))}
-        </Box>
+            </Row>
+            <Row>{renderLTSData()}</Row>
+            <Box sx={{ width: "100%", paddingBottom: "100px" }}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs value={tab} onChange={handleChange}>
+                  {sortedResultView.map(({ left, right }, i) => (
+                    <Tab
+                      key={left.stateKey + right.stateKey}
+                      label={renderTabLabel(
+                        left.stateKey,
+                        right.stateKey,
+                        tab === i
+                      )}
+                      {...a11yProps(1)}
+                    />
+                  ))}
+                </Tabs>
+              </Box>
+              {sortedResultView.map((resultItem, i) => (
+                <TabPanel
+                  value={tab}
+                  index={i}
+                  key={resultItem.left.stateKey + resultItem.right.stateKey}
+                >
+                  <Row>
+                    <Tag
+                      color={tagColors[0]}
+                    >{`${resultItem.left.stateKey} = ${resultItem.left.ccs}`}</Tag>
+                    <Tag
+                      color={tagColors[1]}
+                    >{`${resultItem.right.stateKey} = ${resultItem.right.ccs}`}</Tag>
+                  </Row>
+                  <ComparisionTable result={resultItem} />
+                </TabPanel>
+              ))}
+            </Box>
+          </>
+        )}
       </div>
     </div>
   );

@@ -160,7 +160,7 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Text in a modal
           </Typography>
-          {/* <EquivalenceHierarchy equivalences={}/> */}
+          <EquivalenceHierarchy />
         </Box>
       </Modal>
     </TableContainer>

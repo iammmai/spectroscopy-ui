@@ -8,14 +8,7 @@ import SpectroscopyOverview from "./SpectroscopyOverview/SpectroscopyOverview";
 import SpectroscopyList from "SpectroscopyList/SpectroscopyList";
 import SpectroscopyResult from "SpectroscopyResult/SpectroscopyResult";
 
-import resultData from "exampleData";
-
 const queryClient = new QueryClient();
-
-const exampleProcesses = [
-  { name: "L16", ccs: "a.b.0 + a.(b.0 + c.0)" },
-  { name: "R16", ccs: " a.(b.0 + c.0)" },
-];
 
 function App() {
   return (
@@ -25,15 +18,7 @@ function App() {
           <Route path="/" element={<CCSOverview />} />
           <Route path="/list" element={<SpectroscopyList />} />
           <Route path="/:id" element={<SpectroscopyOverview />} />
-          <Route
-            path="/result"
-            element={
-              <SpectroscopyResult
-                result={resultData}
-                processes={exampleProcesses}
-              />
-            }
-          />
+          <Route path="/:id/result" element={<SpectroscopyResult />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
