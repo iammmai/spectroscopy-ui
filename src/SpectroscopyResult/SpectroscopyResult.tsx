@@ -7,6 +7,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+
 import * as R from "ramda";
 
 import Header from "Header/Header";
@@ -74,17 +76,22 @@ const Tag = styled.div`
 const TabContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  margin-top: 15px;
+  justify-content: start;
+  margin-top: 25px;
   gap: 30px;
 `;
 
 const StyledDiv = styled.div`
+  display: flex;
+  flex-direction: column;
   text-align: left;
   box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
   border-radius: 5px;
   background-color: white;
   padding: 20px;
+  height: fit-content;
+  width: min-content;
+  gap: 5px;
 `;
 
 const tagColors = ["#F2994A", "#6FCF97"];
@@ -492,7 +499,14 @@ const SpectroscopyResultComponent = () => {
                   </Row>
                   <TabContainer>
                     <StyledDiv>
-                      <Typography variant="h6">Overview</Typography>
+                      <Typography variant="subtitle1">
+                        Hierarchy of equivalences/preorders
+                      </Typography>
+                      <Divider />
+                      <Typography variant="body2">
+                        The processes are equivalent under the preorderings,
+                        which are highlighted in blue.
+                      </Typography>
                       <EquivalenceHierarchy
                         equivalences={
                           resultItem.preorderings as EquivalenceName[]
@@ -506,6 +520,10 @@ const SpectroscopyResultComponent = () => {
                       />
                     </StyledDiv>
                     <StyledDiv>
+                      <Typography variant="subtitle1">
+                        Overview of distinguishing formulas
+                      </Typography>
+                      <Divider />
                       <ComparisionTable result={resultItem} />
                     </StyledDiv>
                   </TabContainer>

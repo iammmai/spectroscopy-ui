@@ -131,7 +131,8 @@ export const EQUIVALENCES = {
   },
   TRACES: {
     name: "traces",
-    description: "dsfkjsdhfjlk",
+    description:
+      "Two states s,r are trace equivalent iff Tr(s)=Tr(r). They can perform the same finite sequences of transitions)",
     dimensions: {
       observations: "∞",
       conjunctions: "0",

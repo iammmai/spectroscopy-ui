@@ -22,18 +22,6 @@ const OuterContainer = styled.div`
   width: fit-content;
 `;
 
-// const Block = styled((props) => <div {...props} />)`
-//   width: ${(props) => props.width};
-//   height: ${(props) => props.height || "70px"};
-//   background-color: ${(props) => props.color};
-//   opacity: ${(props) => (props.isHighlighted ? 0.7 : 1)};
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   font-size: 12px;
-//   color: #414040;
-// `;
-
 const Row = styled.div`
   display: flex;
   flex-direction: row;

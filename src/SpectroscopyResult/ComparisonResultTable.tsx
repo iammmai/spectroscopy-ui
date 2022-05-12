@@ -1,24 +1,31 @@
+import HelpIcon from "@mui/icons-material/Help";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import HelpIcon from "@mui/icons-material/Help";
-import IconButton from "@mui/material/IconButton";
-import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
-import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
-import Modal from "@mui/material/Modal";
+import Tooltip, { tooltipClasses, TooltipProps } from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-
-import { useMemo, useState } from "react";
-import { styled } from "@mui/material/styles";
 import * as R from "ramda";
+import { useMemo } from "react";
+import styledComponent from "styled-components";
+import { styled } from "@mui/material/styles";
 
-import type { SpectroscopyViewResult } from "./SpectroscopyResult";
 import { EQUIVALENCES } from "utils/constants";
-import EquivalenceHierarchy from "EquivalenceHierarchy/EquivalenceHierarchy";
+import type { SpectroscopyViewResult } from "./SpectroscopyResult";
+
+const StyledDiv = styledComponent.div`
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background-color: white;
+  padding: 5px;
+  gap: 5px;
+`;
 
 const priceLabel = [
   "observations",
@@ -64,15 +71,6 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
 }));
 
 const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setOpen(true);
-  };
-  const handleClose = () => setOpen(false);
-
   const rows = useMemo(() => {
     return result.distinctions.map(({ formula, price, inequivalences }) => ({
       formula,
@@ -87,20 +85,28 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
     }));
   }, [result.distinctions]) as ResultRow[];
 
-  const renderTooltipContent = (inequivalences: string[] = []) => {
-    const descriptions = inequivalences.map((inequivalence) =>
-      R.pipe<any, any, any>(
-        R.find(R.propEq("name", inequivalence)),
-        R.prop("description")
-      )(Object.values(EQUIVALENCES))
+  const renderTooltipContent = (inequivalenceNames: string[] = []) => {
+    const inequivalences = inequivalenceNames.map((inequivalence) =>
+      R.find(R.propEq("name", inequivalence))(Object.values(EQUIVALENCES))
     );
 
     return (
       <Box>
-        {descriptions.map((description) => (
-          <p key={description}>{description}</p>
+        {inequivalences.map((inequivalence: any) => (
+          <StyledDiv key={inequivalence.name}>
+            <Typography variant="body2">{inequivalence.description}</Typography>
+            <Divider />
+            <Typography variant="body2">
+              {`In order to be distinguished under ${inequivalence.name} a distinguishing
+            formula must fulfil the following dimensions:`}
+            </Typography>
+            {Object.entries(inequivalence.dimensions).map((dimension) => (
+              <Typography variant="body2">
+                {dimension[0]} : {dimension[1]}
+              </Typography>
+            ))}
+          </StyledDiv>
         ))}
-        <Link onClick={handleOpen}>View equivalence hierarchy</Link>
       </Box>
     );
   };
@@ -110,7 +116,7 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Coarest distinguishing formula</TableCell>
+            <TableCell>Coarsest distinguishing formula</TableCell>
             <TableCell align="right">Observations</TableCell>
             <TableCell align="right">Conjuntions</TableCell>
             <TableCell align="right">Positive deep</TableCell>
@@ -150,18 +156,6 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
           ))}
         </TableBody>
       </Table>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
-          </Typography>
-        </Box>
-      </Modal>
     </TableContainer>
   );
 };
