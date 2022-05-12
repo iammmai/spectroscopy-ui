@@ -2,12 +2,14 @@ import React, { ReactNode, useState } from "react";
 import styled from "styled-components";
 import * as R from "ramda";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-import { Popper, Box, IconButton, Typography } from "@mui/material";
+import { Popper, Typography } from "@mui/material";
 import { EquivalenceName } from "utils/constants";
 
 const ALERT_ORANGE = "#FFC52F";
 
-const StyledDiv = styled((props) => <div {...props} />)`
+const StyledDiv = styled((props) => (
+  <div {...R.omit(["isHighlighted"], props)} />
+))`
   width: ${(props) => props.width};
   height: ${(props) => props.height || "70px"};
   background-color: ${(props) => props.color};
@@ -80,7 +82,7 @@ const Block = ({
             </Typography>
             <Typography>
               {distinctions.map((d) => (
-                <Typography variant="body2" gutterBottom>
+                <Typography key={d.formula} variant="body2" gutterBottom>
                   {d.formula}
                 </Typography>
               ))}

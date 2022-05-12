@@ -65,11 +65,6 @@ const Settingsbar = ({
   onTagClose: (state: { id: string; key: string }) => void;
   onCompare: () => void;
 }) => {
-  const [selectedEquivalences, setEquivalences] = useState<string[] | []>([]);
-
-  const handleSelect = (e: SelectChangeEvent<unknown>) =>
-    setEquivalences(e.target.value as SetStateAction<string[] | []>);
-
   const handleTagClose = (state: { id: string; key: string }) => () => {
     onTagClose(state);
   };
@@ -93,28 +88,9 @@ const Settingsbar = ({
         </TagContainer>
       </FormControl>
       <FormControl sx={formControlStyle}>
-        <InputLabel id="equivalence-select-label">
-          Examine states in regards to
-        </InputLabel>
-        <StyledSelect
-          labelId="equivalence-select-label"
-          id="equivalence-select"
-          multiple
-          value={selectedEquivalences}
-          onChange={handleSelect}
-          input={<OutlinedInput label=" Examine states in regards to" />}
-        >
-          {EQUIVALENCES.map((equivalence) => (
-            <MenuItem key={equivalence} value={equivalence}>
-              {equivalence}
-            </MenuItem>
-          ))}
-        </StyledSelect>
         <Button
           variant="contained"
-          disabled={
-            selectedStates.length < 2 || selectedEquivalences.length === 0
-          }
+          disabled={selectedStates.length < 2}
           onClick={onCompare}
         >
           Compare

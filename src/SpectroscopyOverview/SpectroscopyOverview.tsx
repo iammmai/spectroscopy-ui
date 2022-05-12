@@ -165,16 +165,17 @@ function SpectroscopyOverview() {
   return (
     <div className="App">
       <Header />
-      <Settingsbar
-        selectedStates={selectedStates}
-        onTagClose={deselectState}
-        onCompare={handleCompare}
-      />
+
       <div className="content-container">
         {isLoading ? (
           <CircularProgress />
         ) : (
           <>
+            <Settingsbar
+              selectedStates={selectedStates}
+              onTagClose={deselectState}
+              onCompare={handleCompare}
+            />
             <EditableTitle
               value={data.title}
               inputLabel="Title"

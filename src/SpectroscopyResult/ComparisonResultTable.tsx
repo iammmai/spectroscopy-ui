@@ -97,7 +97,7 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
             <Typography variant="body2">{inequivalence.description}</Typography>
             <Divider />
             <Typography variant="body2">
-              {`In order to be distinguished under ${inequivalence.name} a distinguishing
+              {`In order to be distinguished under ${inequivalence.name} equivalence a distinguishing
             formula must fulfil the following dimensions:`}
             </Typography>
             {Object.entries(inequivalence.dimensions).map((dimension) => (
@@ -110,6 +110,15 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
       </Box>
     );
   };
+
+  if (result.preorderings.includes(EQUIVALENCES.BISIMULATION.name)) {
+    return (
+      <Typography variant="body2">
+        There are no distinguishing formulas found as the processes are
+        bismilar.
+      </Typography>
+    );
+  }
 
   return (
     <TableContainer>

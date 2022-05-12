@@ -81,7 +81,7 @@ const TabContainer = styled.div`
   gap: 30px;
 `;
 
-const StyledDiv = styled.div`
+const StyledDiv = styled(props => <div {...props}/>)`
   display: flex;
   flex-direction: column;
   text-align: left;
@@ -90,7 +90,7 @@ const StyledDiv = styled.div`
   background-color: white;
   padding: 20px;
   height: fit-content;
-  width: min-content;
+  width: ${(props) => props.width};
   gap: 5px;
 `;
 
@@ -99,7 +99,6 @@ const grey = "#BDBDBD";
 
 const LTS_WIDTH = window.innerWidth - 200;
 const LTS_HEIGHT = 400 as const;
-// const ltsOffset =
 const LEFT_SHIFT = LTS_WIDTH * 0.25;
 const LTS_OFFSET = LTS_WIDTH * 0.4;
 
@@ -108,14 +107,6 @@ const EMPTY_RESULT = {
   right: "",
   distinctions: [],
   preorderings: [],
-};
-const formatCCS = (ccs: string) => ccs.replace(/[()\s]/g, "");
-
-const getStateNameFromLTS = (ccs: string, LTS: LTS) => {
-  const result = (Object.entries(LTS.states).find(
-    (state) => formatCCS(ccs) === formatCCS((state[1] as any).ccs as string)
-  ) || [])[0];
-  return result || "";
 };
 
 const pickLTS = (prefix: string) =>
@@ -498,7 +489,7 @@ const SpectroscopyResultComponent = () => {
                     >{`${resultItem.right.stateKey} = ${resultItem.right.ccs}`}</Tag>
                   </Row>
                   <TabContainer>
-                    <StyledDiv>
+                    <StyledDiv width="min-content">
                       <Typography variant="subtitle1">
                         Hierarchy of equivalences/preorders
                       </Typography>
@@ -519,7 +510,7 @@ const SpectroscopyResultComponent = () => {
                         }
                       />
                     </StyledDiv>
-                    <StyledDiv>
+                    <StyledDiv width="100%">
                       <Typography variant="subtitle1">
                         Overview of distinguishing formulas
                       </Typography>

@@ -1,13 +1,8 @@
-import { RowingSharp } from "@mui/icons-material";
-
-import { useMemo, useState } from "react";
 import * as R from "ramda";
+import { useMemo } from "react";
 import styled from "styled-components";
-import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-
-import { EQUIVALENCES } from "utils/constants";
 import type { EquivalenceName } from "utils/constants";
-import { Button, Popper, Box, IconButton } from "@mui/material";
+import { EQUIVALENCES } from "utils/constants";
 import Block from "./Block";
 
 const LIGHT_LIGHT_GREY = "#F2F2F2";
@@ -53,8 +48,6 @@ const EquivalenceHierarchy = ({
   equivalences: EquivalenceName[];
   distinctions: { formula: string; inequivalences: EquivalenceName[] }[];
 }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const preorders = useMemo(
     () =>
       R.pipe(
