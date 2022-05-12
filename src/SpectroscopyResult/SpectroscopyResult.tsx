@@ -1,4 +1,4 @@
-import { IconButton } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -6,7 +6,6 @@ import { ArrowBack } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import * as R from "ramda";
 
@@ -16,10 +15,11 @@ import styled from "styled-components";
 import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import ComparisionTable from "./ComparisonResultTable";
-import { renameStates, transformToLTS } from "utils/ltsConversion";
 import Arrow from "utils/arrowSvg";
 import { useQueryParams } from "utils/hooks";
 import api from "api";
+import EquivalenceHierarchy from "EquivalenceHierarchy/EquivalenceHierarchy";
+import type { EquivalenceName } from "utils/constants";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -69,6 +69,22 @@ const Tag = styled.div`
   border-radius: 3px;
   padding: 2px 5px;
   align-items: center;
+`;
+
+const TabContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 30px;
+`;
+
+const StyledDiv = styled.div`
+  text-align: left;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+  background-color: white;
+  padding: 20px;
 `;
 
 const tagColors = ["#F2994A", "#6FCF97"];
@@ -122,11 +138,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -208,18 +220,10 @@ const SpectroscopyResultComponent = () => {
       }
     }
   };
+
   const ltsData: LTS[] = useMemo(
-    () =>
-      R.isEmpty(states)
-        ? []
-        : states.map(({ ccs, name }) =>
-            renameStates(
-              transformToLTS(ccs),
-              R.head(name),
-              parseInt(R.tail(name))
-            )
-          ),
-    [states]
+    () => (isSuccess ? [data.data.leftLTS, data.data.rightLTS] : []),
+    [isSuccess]
   );
 
   useEffect(() => {
@@ -449,6 +453,7 @@ const SpectroscopyResultComponent = () => {
               {states.map((process, i) => (
                 <Tag
                   color={tagColors[i]}
+                  key={process.name}
                 >{`${process.name} = ${process.ccs}`}</Tag>
               ))}
             </Row>
@@ -476,14 +481,34 @@ const SpectroscopyResultComponent = () => {
                   key={resultItem.left.stateKey + resultItem.right.stateKey}
                 >
                   <Row>
+                    <Typography>Comparing</Typography>
                     <Tag
                       color={tagColors[0]}
                     >{`${resultItem.left.stateKey} = ${resultItem.left.ccs}`}</Tag>
+                    <Typography>to</Typography>
                     <Tag
                       color={tagColors[1]}
                     >{`${resultItem.right.stateKey} = ${resultItem.right.ccs}`}</Tag>
                   </Row>
-                  <ComparisionTable result={resultItem} />
+                  <TabContainer>
+                    <StyledDiv>
+                      <Typography variant="h6">Overview</Typography>
+                      <EquivalenceHierarchy
+                        equivalences={
+                          resultItem.preorderings as EquivalenceName[]
+                        }
+                        distinctions={
+                          resultItem.distinctions as {
+                            formula: string;
+                            inequivalences: EquivalenceName[];
+                          }[]
+                        }
+                      />
+                    </StyledDiv>
+                    <StyledDiv>
+                      <ComparisionTable result={resultItem} />
+                    </StyledDiv>
+                  </TabContainer>
                 </TabPanel>
               ))}
             </Box>

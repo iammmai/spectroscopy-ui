@@ -98,7 +98,7 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
     return (
       <Box>
         {descriptions.map((description) => (
-          <p>{description}</p>
+          <p key={description}>{description}</p>
         ))}
         <Link onClick={handleOpen}>View equivalence hierarchy</Link>
       </Box>
@@ -160,7 +160,6 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Text in a modal
           </Typography>
-          <EquivalenceHierarchy />
         </Box>
       </Modal>
     </TableContainer>
