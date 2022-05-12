@@ -1,26 +1,10 @@
 import { Button } from "@mui/material";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
-import OutlinedInput from "@mui/material/OutlinedInput";
+import Select from "@mui/material/Select";
 import * as R from "ramda";
-
-import { SetStateAction, useState } from "react";
-
 import styled from "styled-components";
 import StateTag from "./StateTag";
-
-const EQUIVALENCES = [
-  "bisimulation",
-  "2-nested simulation",
-  "ready simulation",
-  "ready traces",
-  "possible futures",
-  "simulation",
-  "failure",
-  "traces",
-];
+import { tagColors } from "utils/constants";
 
 const StyledDiv = styled.div`
   display: flex;
@@ -52,9 +36,6 @@ const formControlStyle = {
 const PlaceholderText = styled.span`
   color: #666666; ;
 `;
-const StyledSelect = styled(Select)`
-  width: 30vw;
-`;
 
 const Settingsbar = ({
   selectedStates = [],
@@ -77,11 +58,12 @@ const Settingsbar = ({
           {R.isEmpty(selectedStates) ? (
             <PlaceholderText>Select states from the lts</PlaceholderText>
           ) : (
-            selectedStates.map((state) => (
+            selectedStates.map((state, i) => (
               <StateTag
                 label={state.key}
                 onClose={handleTagClose(state)}
                 key={state.key}
+                color={tagColors[i]}
               />
             ))
           )}

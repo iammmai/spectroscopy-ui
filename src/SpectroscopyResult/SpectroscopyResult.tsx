@@ -21,7 +21,7 @@ import Arrow from "utils/arrowSvg";
 import { useQueryParams } from "utils/hooks";
 import api from "api";
 import EquivalenceHierarchy from "EquivalenceHierarchy/EquivalenceHierarchy";
-import type { EquivalenceName } from "utils/constants";
+import { EquivalenceName, tagColors } from "utils/constants";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -81,7 +81,7 @@ const TabContainer = styled.div`
   gap: 30px;
 `;
 
-const StyledDiv = styled(props => <div {...props}/>)`
+const StyledDiv = styled((props) => <div {...props} />)`
   display: flex;
   flex-direction: column;
   text-align: left;
@@ -94,7 +94,6 @@ const StyledDiv = styled(props => <div {...props}/>)`
   gap: 5px;
 `;
 
-const tagColors = ["#F2994A", "#6FCF97"];
 const grey = "#BDBDBD";
 
 const LTS_WIDTH = window.innerWidth - 200;

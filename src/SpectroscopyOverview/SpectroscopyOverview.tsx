@@ -13,7 +13,6 @@ import api from "api";
 import Settingsbar from "./SettingsBar";
 
 import LTSCard from "./LTS";
-import EquivalenceHierarchy from "EquivalenceHierarchy/EquivalenceHierarchy";
 import EditableTitle from "./EditableTitle";
 import { LTS } from "pseuco-shared-components/lts/lts";
 import AddProcess from "CCSOverview/AddProcess";

@@ -160,3 +160,5 @@ export const EQUIVALENCES = {
 
 const equivalenceNames = Object.values(EQUIVALENCES).map((e) => e.name);
 export type EquivalenceName = typeof equivalenceNames[number];
+
+export const tagColors = ["#F2994A", "#6FCF97"];

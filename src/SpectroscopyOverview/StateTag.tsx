@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import CloseIcon from "@mui/icons-material/Close";
 
-const StyledDiv = styled.div`
-  background-color: #56ccf2;
+const StyledDiv = styled((props) => <div {...props} />)`
+  background-color: ${(props) => props.color || "#56ccf2"};
   color: white;
   display: flex;
   flex-direction: row;
@@ -14,12 +14,14 @@ const StyledDiv = styled.div`
 const StateTag = ({
   label,
   onClose,
+  color,
 }: {
   label: string;
   onClose: () => void;
+  color?: string;
 }) => {
   return (
-    <StyledDiv>
+    <StyledDiv color={color}>
       <span>{label}</span>
       <CloseIcon
         fontSize="small"
