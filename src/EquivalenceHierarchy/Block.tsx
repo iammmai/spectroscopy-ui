@@ -80,13 +80,11 @@ const Block = ({
             <Typography variant="body2" gutterBottom>
               {`The processes are distinguished under ${name} preorder as the following distinguishing formula have been found:`}
             </Typography>
-            <Typography>
-              {distinctions.map((d) => (
-                <Typography key={d.formula} variant="body2" gutterBottom>
-                  {d.formula}
-                </Typography>
-              ))}
-            </Typography>
+            {distinctions.map((d) => (
+              <Typography key={d.formula} variant="body2" gutterBottom>
+                {d.formula}
+              </Typography>
+            ))}
           </Content>
         </Popper>
       )}

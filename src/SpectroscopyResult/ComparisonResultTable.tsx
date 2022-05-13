@@ -92,19 +92,22 @@ const ComparisionTable = ({ result }: { result: SpectroscopyViewResult }) => {
 
     return (
       <Box>
-        {inequivalences.map((inequivalence: any) => (
+        {inequivalences.map((inequivalence: any, i: number) => (
           <StyledDiv key={inequivalence.name}>
+            <Typography variant="overline">{inequivalence.name}</Typography>
             <Typography variant="body2">{inequivalence.description}</Typography>
-            <Divider />
             <Typography variant="body2">
               {`In order to be distinguished under ${inequivalence.name} equivalence a distinguishing
             formula must fulfil the following dimensions:`}
             </Typography>
             {Object.entries(inequivalence.dimensions).map((dimension) => (
-              <Typography variant="body2">
+              <Typography variant="body2" key={dimension[0]}>
                 {dimension[0]} : {dimension[1]}
               </Typography>
             ))}
+            {inequivalences.length > 1 && i !== inequivalences.length - 1 && (
+              <Divider />
+            )}
           </StyledDiv>
         ))}
       </Box>

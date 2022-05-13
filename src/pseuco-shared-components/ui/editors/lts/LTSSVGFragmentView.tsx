@@ -78,6 +78,7 @@ const LTSSVGFragmentView: React.FC<{
   onStateDrag?: (stateKey: string, x: number, y: number) => void;
   onStateDragEnd?: (stateKey: string, x: number, y: number) => void;
   selectedKeys?: string[];
+  className?: string;
 }> = ({
   states,
   transitions,
@@ -93,6 +94,7 @@ const LTSSVGFragmentView: React.FC<{
   onStateDrag,
   onStateDragEnd,
   selectedKeys = [],
+  className,
 }) => {
   // set up decoration definition
   // Chrome does not like it if we have two SVG elements with the same marker definition at the same time
@@ -151,7 +153,7 @@ const LTSSVGFragmentView: React.FC<{
   );
 
   return (
-    <g>
+    <g className={className}>
       <defs>
         <marker
           id={arrowHeadId}

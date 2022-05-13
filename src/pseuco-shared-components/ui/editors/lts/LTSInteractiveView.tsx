@@ -80,6 +80,7 @@ export type LTSInteractiveViewProps = {
   onUnexploredExpansionAttempt?: (stateKey: string) => void;
   onExpansionStatusChange?: (status: LTSExpansionStatus) => void;
   selectedKeys?: string[];
+  className?: string;
 };
 const minBorderDistance = stateCircleSize;
 
@@ -690,6 +691,7 @@ class LTSInteractiveView
         onTransitionMouseOver={this.props.onTransitionMouseOver}
         onTransitionMouseOut={this.props.onTransitionMouseOut}
         selectedKeys={this.props.selectedKeys}
+        className={this.props.className}
       />
     );
   }
