@@ -8,7 +8,7 @@ import AddProcess from "CCSOverview/AddProcess";
 import Header from "Header/Header";
 import { LTS } from "pseuco-shared-components/lts/lts";
 import * as R from "ramda";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import EditableTitle from "./EditableTitle";
@@ -72,6 +72,8 @@ function SpectroscopyOverview() {
     {
       onSuccess: ({ data }: { data: any }) => {
         queryClient.invalidateQueries("spectroscopyData");
+        setNewProcess(initialNewProcessState);
+        setShowAddProcess(false);
       },
     }
   );
@@ -127,11 +129,6 @@ function SpectroscopyOverview() {
         prefix: newProcess.prefix,
         spectroscopyId: id as string,
       });
-
-      if (createFormulaMutation.isSuccess) {
-        setNewProcess(initialNewProcessState);
-        setShowAddProcess(false);
-      }
     }
   };
 
