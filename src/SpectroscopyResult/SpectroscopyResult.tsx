@@ -1,5 +1,12 @@
 import { IconButton, Typography } from "@mui/material";
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import {
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+  forwardRef,
+} from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
@@ -14,7 +21,7 @@ import * as R from "ramda";
 import Header from "Header/Header";
 import styled from "styled-components";
 
-import LTSInteractiveView from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
+import LTSInteractiveView, { LTSInteractiveViewProps } from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import ComparisionTable from "./ComparisonResultTable";
 import Arrow from "utils/arrowSvg";
@@ -92,6 +99,17 @@ const StyledDiv = styled((props) => <div {...props} />)`
   height: fit-content;
   width: ${(props) => props.width};
   gap: 5px;
+`;
+
+const StyledLTSInteractiveView = styled(
+  forwardRef<LTSInteractiveView, LTSInteractiveViewProps>((props, ref) => (
+    <LTSInteractiveView {...R.omit(["highlightColor"], props)} ref={ref} />
+  ))
+)`
+  .state-border-selected {
+    stroke: black;
+    fill: ${(props) => props.highlightColor || "#56ccf2"};
+  }
 `;
 
 const grey = "#BDBDBD";
@@ -367,8 +385,6 @@ const SpectroscopyResultComponent = () => {
     [setTooltipCoordinates]
   );
 
-  // TODO: add a callback, that sets some state whenever a full Update was done by the LTSInteractive view
-  // then whenever full update was done, draw the arrow
   const renderLTS = useCallback(
     (leftOrRight: "left" | "right") => {
       const initialStateKey = getInitialStateKey(leftOrRight);
@@ -376,7 +392,7 @@ const SpectroscopyResultComponent = () => {
       const index = leftOrRight === "left" ? 0 : 1;
       return (
         <g transform={`translate(${index * LTS_OFFSET - LEFT_SHIFT}, 0)`}>
-          <LTSInteractiveView
+          <StyledLTSInteractiveView
             lts={
               {
                 ...lts,
@@ -394,6 +410,7 @@ const SpectroscopyResultComponent = () => {
             onStateClick={handleStateClick}
             onStateMouseOver={handleMouseOver}
             onStateMouseOut={handleMouseOut}
+            highlightColor="#56ccf2"
           />
         </g>
       );

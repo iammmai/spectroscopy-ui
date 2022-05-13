@@ -15,7 +15,7 @@ const size = window.innerWidth / 3;
 
 const StyledLTSView = styled(
   forwardRef((props, ref) => (
-    <LTSInteractiveView {...R.omit("highlightColor", props)} ref={ref} />
+    <LTSInteractiveView {...R.omit(["highlightColor"], props)} ref={ref} />
   ))
 )`
   .state-border-selected {
@@ -53,7 +53,6 @@ const LTSViewer = ({
   });
 
   const handleExpandAll = () => {
-    console.log("expandall");
     for (let i = 0; i < Object.keys(lts.states).length; i++) {
       if (ref.current !== null) {
         (ref.current as LTSInteractiveView).expandAllSingleStep();

@@ -1,21 +1,20 @@
-import { useQuery, useMutation, useQueryClient } from "react-query";
-import { useParams, useNavigate } from "react-router-dom";
-import CircularProgress from "@mui/material/CircularProgress";
-import Button from "@mui/material/Button";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import { useState } from "react";
+import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import { parser } from "@pseuco/ccs-interpreter";
-import * as R from "ramda";
-
-import "./SpectroscopyOverview.css";
-import Header from "Header/Header";
 import api from "api";
-import Settingsbar from "./SettingsBar";
-
-import LTSCard from "./LTS";
-import EditableTitle from "./EditableTitle";
-import { LTS } from "pseuco-shared-components/lts/lts";
 import AddProcess from "CCSOverview/AddProcess";
+import Header from "Header/Header";
+import { LTS } from "pseuco-shared-components/lts/lts";
+import * as R from "ramda";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import EditableTitle from "./EditableTitle";
+import LTSCard from "./LTS";
+import Settingsbar from "./SettingsBar";
+import "./SpectroscopyOverview.css";
 
 const isValidCCS = (ccs: string | undefined) => {
   if (!ccs) return false;
@@ -128,8 +127,11 @@ function SpectroscopyOverview() {
         prefix: newProcess.prefix,
         spectroscopyId: id as string,
       });
-      setNewProcess(initialNewProcessState);
-      setShowAddProcess(false);
+
+      if (createFormulaMutation.isSuccess) {
+        setNewProcess(initialNewProcessState);
+        setShowAddProcess(false);
+      }
     }
   };
 
@@ -212,7 +214,9 @@ function SpectroscopyOverview() {
                 )
               )}
             </div>
-
+            {createFormulaMutation.isError && (
+              <Alert severity="error">{`Error on saving spectroscopy: ${createFormulaMutation.error}`}</Alert>
+            )}
             {showAddProcess ? (
               <>
                 <AddProcess

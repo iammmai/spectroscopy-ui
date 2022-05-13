@@ -1,17 +1,16 @@
-import LoadingButton from "@mui/lab/LoadingButton";
-import Button from "@mui/material/Button";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
 import { parser } from "@pseuco/ccs-interpreter";
+import api from "api";
+import Header from "Header/Header";
+import * as R from "ramda";
 import React, { useReducer } from "react";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
-import * as R from "ramda";
 import { v4 as uuidv4 } from "uuid";
-
-import Header from "Header/Header";
-import api from "api";
 import AddProcess from "./AddProcess";
-
 import "./CCSOverview.css";
 
 const initialState = {
@@ -133,6 +132,7 @@ function CCSOverview() {
     };
 
   const validateCCS = (processId: string) => () => {
+    console.log("parse", state.processes[processId].ccs);
     try {
       const parsedResult = parser.parse(state.processes[processId].ccs) as any;
       dispatch({
@@ -197,6 +197,9 @@ function CCSOverview() {
         <h2>
           Enter processes in ccs notation in order to compare them to each other
         </h2>
+        {createSpectroscopyMutation.isError && (
+          <Alert severity="error">{`Error on saving spectroscopy: ${createSpectroscopyMutation.error}`}</Alert>
+        )}
         <div className="input-container">
           {Object.values(state.processes).map((process: any) => (
             <AddProcess

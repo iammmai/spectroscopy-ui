@@ -81,6 +81,7 @@ export type LTSInteractiveViewProps = {
   onExpansionStatusChange?: (status: LTSExpansionStatus) => void;
   selectedKeys?: string[];
   className?: string;
+  highlightColor?: string;
 };
 const minBorderDistance = stateCircleSize;
 
