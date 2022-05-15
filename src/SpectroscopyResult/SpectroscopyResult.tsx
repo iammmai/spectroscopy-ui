@@ -21,7 +21,9 @@ import * as R from "ramda";
 import Header from "Header/Header";
 import styled from "styled-components";
 
-import LTSInteractiveView, { LTSInteractiveViewProps } from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
+import LTSInteractiveView, {
+  LTSInteractiveViewProps,
+} from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import ComparisionTable from "./ComparisonResultTable";
 import Arrow from "utils/arrowSvg";
@@ -225,7 +227,7 @@ const SpectroscopyResultComponent = () => {
             },
           ]
         : [],
-    [data, isSuccess]
+    [data, isSuccess, left, right]
   );
 
   const handleExpandAll = (lts: LTS) => {
@@ -238,7 +240,7 @@ const SpectroscopyResultComponent = () => {
 
   const ltsData: LTS[] = useMemo(
     () => (isSuccess ? [data.data.leftLTS, data.data.rightLTS] : []),
-    [isSuccess]
+    [isSuccess, data]
   );
 
   useEffect(() => {
