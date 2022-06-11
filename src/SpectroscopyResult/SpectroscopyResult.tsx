@@ -123,14 +123,14 @@ const LEFT_SHIFT = LTS_WIDTH * 0.25;
 const LTS_OFFSET = LTS_WIDTH * 0.4;
 
 const EMPTY_RESULT = {
-  left: "",
-  right: "",
+  left: {
+    stateKey: "",
+    ccs: "",
+  },
+  right: { stateKey: "", ccs: "" },
   distinctions: [],
   preorderings: [],
 };
-
-const pickLTS = (prefix: string) =>
-  R.find((lts: LTS) => R.head(prefix) === R.head(lts.initialState));
 
 const getResultDistinctions = R.pipe<
   [SpectroscopyViewResult],
@@ -202,10 +202,10 @@ const SpectroscopyResultComponent = () => {
     }
   );
 
-  const result = useMemo(
+  const sortedResultView = useMemo(
     () =>
       isSuccess
-        ? (R.path(["data", "result"])(data as any) as SpectroscopyResult[])
+        ? (R.path(["data", "result"])(data as any) as SpectroscopyViewResult[])
         : [EMPTY_RESULT],
     [data, isSuccess]
   );
@@ -247,40 +247,6 @@ const SpectroscopyResultComponent = () => {
   useEffect(() => {
     ltsData.forEach((lts) => handleExpandAll(lts));
   }, [tab, ltsData]);
-
-  const processNames = useMemo(
-    () => states.map((state) => state.name),
-    [states]
-  );
-
-  const sortedResultView = useMemo(() => {
-    if (R.isEmpty(states)) return [];
-    const sorted = R.sort((a: SpectroscopyResult, b: SpectroscopyResult) => {
-      const leftProp: (obj: any) => string | undefined = R.prop("left");
-      if (processNames.includes(leftProp(a) as string)) {
-        return -Infinity;
-      }
-      return (leftProp(a) || "").length - (leftProp(b) || "").length;
-    }, result);
-
-    return sorted.map((resultItem) => {
-      return {
-        ...resultItem,
-        left: {
-          stateKey: resultItem.left,
-          ccs: R.path(["states", resultItem.left, "ccs"])(
-            pickLTS(R.head(resultItem.left))(ltsData)
-          ) as string,
-        },
-        right: {
-          stateKey: resultItem.right,
-          ccs: R.path(["states", resultItem.right, "ccs"])(
-            pickLTS(R.head(resultItem.right))(ltsData)
-          ) as string,
-        },
-      };
-    });
-  }, [result, processNames, ltsData, states]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
