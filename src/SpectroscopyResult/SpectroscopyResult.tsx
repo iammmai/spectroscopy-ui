@@ -88,6 +88,7 @@ const TabContainer = styled.div`
   justify-content: start;
   margin-top: 25px;
   gap: 30px;
+  flex-wrap: wrap;
 `;
 
 const StyledDiv = styled((props) => <div {...props} />)`
@@ -507,6 +508,13 @@ const SpectroscopyResultComponent = () => {
                     >{`${resultItem.right.stateKey} = ${resultItem.right.ccs}`}</Tag>
                   </Row>
                   <TabContainer>
+                    <StyledDiv width="100%">
+                      <Typography variant="subtitle1">
+                        Overview of distinguishing formulas
+                      </Typography>
+                      <Divider />
+                      <ComparisionTable result={resultItem} />
+                    </StyledDiv>
                     <StyledDiv width="min-content">
                       <Typography variant="subtitle1">
                         Hierarchy of equivalences/preorders
@@ -527,13 +535,6 @@ const SpectroscopyResultComponent = () => {
                           }[]
                         }
                       />
-                    </StyledDiv>
-                    <StyledDiv width="100%">
-                      <Typography variant="subtitle1">
-                        Overview of distinguishing formulas
-                      </Typography>
-                      <Divider />
-                      <ComparisionTable result={resultItem} />
                     </StyledDiv>
                   </TabContainer>
                 </TabPanel>
