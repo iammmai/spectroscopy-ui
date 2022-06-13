@@ -7,6 +7,7 @@ import CCSOverview from "./CCSOverview/CCSOverview";
 import SpectroscopyOverview from "./SpectroscopyOverview/SpectroscopyOverview";
 import SpectroscopyList from "SpectroscopyList/SpectroscopyList";
 import SpectroscopyResult from "SpectroscopyResult/SpectroscopyResult";
+import StudentView from "StudentView/StudentView";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/list" element={<SpectroscopyList />} />
           <Route path="/:id" element={<SpectroscopyOverview />} />
           <Route path="/:id/result" element={<SpectroscopyResult />} />
+          <Route path="/:id/student" element={<StudentView />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

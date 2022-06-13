@@ -25,7 +25,7 @@ import LTSInteractiveView, {
   LTSInteractiveViewProps,
 } from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
 import { LTS } from "../pseuco-shared-components/lts/lts";
-import ComparisionTable from "./ComparisonResultTable";
+import ComparisonTable from "./ComparisonResultTable";
 import Arrow from "utils/arrowSvg";
 import { useQueryParams } from "utils/hooks";
 import api from "api";
@@ -72,7 +72,7 @@ const Row = styled.div`
   gap: 5px;
 `;
 
-const Tag = styled.div`
+export const Tag = styled.div`
   background-color: ${(props) => props.color || "#56ccf2"};
   color: white;
   display: flex;
@@ -479,7 +479,7 @@ const SpectroscopyResultComponent = () => {
                         Overview of distinguishing formulas
                       </Typography>
                       <Divider />
-                      <ComparisionTable result={resultItem} />
+                      <ComparisonTable result={resultItem} />
                     </StyledDiv>
                     <StyledDiv width="min-content">
                       <Typography variant="subtitle1">
