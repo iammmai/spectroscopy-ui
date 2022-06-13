@@ -20,6 +20,7 @@ const StyledDiv = styled((props) => (
   font-size: 12px;
   color: #414040;
   gap: 3px;
+  cursor: ${(props) => (props.onClick ? "pointer" : "auto")};
 `;
 
 const Content = styled.div`
@@ -38,6 +39,7 @@ const Block = ({
   children,
   distinctions,
   name,
+  onClick,
 }: {
   width: string;
   height?: string;
@@ -46,6 +48,7 @@ const Block = ({
   children?: ReactNode;
   distinctions?: { formula: string; inequivalences: EquivalenceName[] }[];
   name: string;
+  onClick?: () => void;
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -66,6 +69,7 @@ const Block = ({
         height={height}
         isHighlighted={isHighlighted}
         color={color}
+        onClick={onClick}
       >
         {children}
         {distinctions && (

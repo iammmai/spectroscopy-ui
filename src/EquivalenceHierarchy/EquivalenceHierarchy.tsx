@@ -44,9 +44,11 @@ const getPreorders = (equivalence: EquivalenceName): EquivalenceName[] => {
 const EquivalenceHierarchy = ({
   equivalences = [],
   distinctions = [],
+  onSelect,
 }: {
   equivalences: EquivalenceName[];
-  distinctions: { formula: string; inequivalences: EquivalenceName[] }[];
+  distinctions?: { formula: string; inequivalences: EquivalenceName[] }[];
+  onSelect?: (equivalence: EquivalenceName) => void;
 }) => {
   const preorders = useMemo(
     () =>
@@ -70,6 +72,10 @@ const EquivalenceHierarchy = ({
     [distinctions]
   );
 
+  const handleSelect = (equivalence: EquivalenceName) => () => {
+    onSelect && onSelect(equivalence);
+  };
+
   return (
     <>
       <OuterContainer>
@@ -83,6 +89,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.BISIMULATION.name]
             }
+            onClick={handleSelect(EQUIVALENCES.BISIMULATION.name)}
           >
             {EQUIVALENCES.BISIMULATION.name}
           </Block>
@@ -99,6 +106,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.NESTED_SIMULATION.name]
             }
+            onClick={handleSelect(EQUIVALENCES.NESTED_SIMULATION.name)}
           >
             {EQUIVALENCES.NESTED_SIMULATION.name}
           </Block>
@@ -115,6 +123,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.READY_SIMULATION.name]
             }
+            onClick={handleSelect(EQUIVALENCES.READY_SIMULATION.name)}
           >
             {EQUIVALENCES.READY_SIMULATION.name}
           </Block>
@@ -125,6 +134,7 @@ const EquivalenceHierarchy = ({
             isHighlighted={preorders.includes(
               EQUIVALENCES.NESTED_SIMULATION.name
             )}
+            onClick={handleSelect(EQUIVALENCES.NESTED_SIMULATION.name)}
           />
         </Row>
         <Row>
@@ -133,6 +143,7 @@ const EquivalenceHierarchy = ({
             name={EQUIVALENCES.SIMULATION.name}
             color={MID_GREY}
             isHighlighted={preorders.includes(EQUIVALENCES.SIMULATION.name)}
+            onClick={handleSelect(EQUIVALENCES.SIMULATION.name)}
           ></Block>
           <Block
             width="161px"
@@ -142,6 +153,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.READY_TRACE.name]
             }
+            onClick={handleSelect(EQUIVALENCES.READY_TRACE.name)}
           >
             {EQUIVALENCES.READY_TRACE.name}
           </Block>
@@ -155,6 +167,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.POSSIBLE_FUTURE.name]
             }
+            onClick={handleSelect(EQUIVALENCES.POSSIBLE_FUTURE.name)}
           >
             {EQUIVALENCES.POSSIBLE_FUTURE.name}
           </Block>
@@ -168,6 +181,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.SIMULATION.name]
             }
+            onClick={handleSelect(EQUIVALENCES.SIMULATION.name)}
           >
             {EQUIVALENCES.SIMULATION.name}
           </Block>
@@ -179,6 +193,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.FAILURE_TRACE.name]
             }
+            onClick={handleSelect(EQUIVALENCES.READY_TRACE.name)}
           >
             {EQUIVALENCES.FAILURE_TRACE.name}
           </Block>
@@ -190,6 +205,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.READINESS.name]
             }
+            onClick={handleSelect(EQUIVALENCES.READINESS.name)}
           >
             {EQUIVALENCES.READINESS.name}
           </Block>
@@ -203,6 +219,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.IMPOSSIBLE_FUTURE.name]
             }
+            onClick={handleSelect(EQUIVALENCES.IMPOSSIBLE_FUTURE.name)}
           >
             {EQUIVALENCES.IMPOSSIBLE_FUTURE.name}
           </Block>
@@ -213,6 +230,7 @@ const EquivalenceHierarchy = ({
             name={EQUIVALENCES.SIMULATION.name}
             color={MID_GREY}
             isHighlighted={preorders.includes(EQUIVALENCES.SIMULATION.name)}
+            onClick={handleSelect(EQUIVALENCES.SIMULATION.name)}
           ></Block>
           <Block
             width="322px"
@@ -220,6 +238,7 @@ const EquivalenceHierarchy = ({
             name={EQUIVALENCES.FAILURE.name}
             isHighlighted={preorders.includes(EQUIVALENCES.FAILURE.name)}
             distinctions={distinctionsByEquivalence[EQUIVALENCES.FAILURE.name]}
+            onClick={handleSelect(EQUIVALENCES.FAILURE.name)}
           >
             {EQUIVALENCES.FAILURE.name}
           </Block>
@@ -232,6 +251,7 @@ const EquivalenceHierarchy = ({
             name={EQUIVALENCES.TRACES.name}
             isHighlighted={preorders.includes(EQUIVALENCES.TRACES.name)}
             distinctions={distinctionsByEquivalence[EQUIVALENCES.TRACES.name]}
+            onClick={handleSelect(EQUIVALENCES.TRACES.name)}
           >
             {EQUIVALENCES.TRACES.name}
           </Block>
@@ -246,6 +266,7 @@ const EquivalenceHierarchy = ({
             distinctions={
               distinctionsByEquivalence[EQUIVALENCES.ENABLEDNESS.name]
             }
+            onClick={handleSelect(EQUIVALENCES.ENABLEDNESS.name)}
           >
             {EQUIVALENCES.ENABLEDNESS.name}
           </Block>

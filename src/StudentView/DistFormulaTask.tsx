@@ -145,12 +145,12 @@ const DistFormulaTask = ({
         <Typography>
           {`The processes can be distinguished under different preorders/equivalences. Try to
           find HML fomulae that satisfy ${R.path(
-            [0, "inistalState"],
+            [0, "initialState"],
             ltsData
           )} but do not satify ${R.path(
-            [1, "inistalState"],
+            [1, "initialState"],
             ltsData
-          )}and select the equivalence it`}
+          )} and select the equivalence it`}
           distinguishes.
         </Typography>
         {Object.values(formulae).map((formula: any) =>

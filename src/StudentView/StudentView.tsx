@@ -11,6 +11,7 @@ import styled from "styled-components";
 import { useQueryParams } from "utils/hooks";
 import CCSTask from "./CCSTask";
 import DistFormulaTask from "./DistFormulaTask";
+import HierarchyTask from "./HierarchyTask";
 
 const ContentContainer = styled.div`
   max-width: 80%;
@@ -51,6 +52,12 @@ function reducer(state: any, action: { type: string }) {
         ...state,
         showDistinguishingResult: true,
         progression: PROGRESSION_STATE.HIERARCHY,
+      };
+    case "submitHierarchy":
+      return {
+        ...state,
+        showHierarchyTaskResult: true,
+        progression: PROGRESSION_STATE.RESULT,
       };
 
     default:
@@ -94,6 +101,16 @@ const StudentView = () => {
   const handleSubmitDistinguishing = () =>
     dispatch({ type: "submitDistinguishing" });
 
+  const handleSubmitHierarchy = () => dispatch({ type: "submitHierarchy" });
+
+  const resultData = R.find(
+    R.allPass([
+      R.pathEq(["left", "stateKey"], left),
+      R.pathEq(["right", "stateKey"], right),
+    ]),
+    sortedResultView
+  ) as SpectroscopyViewResult;
+
   return (
     <div className="App">
       <Header />
@@ -108,15 +125,14 @@ const StudentView = () => {
             ltsData={ltsData}
             onContinue={handleSubmitDistinguishing}
             showResult={state.showDistinguishingResult}
-            resultData={
-              R.find(
-                R.allPass([
-                  R.pathEq(["left", "stateKey"], left),
-                  R.pathEq(["right", "stateKey"], right),
-                ]),
-                sortedResultView
-              ) as SpectroscopyViewResult
-            }
+            resultData={resultData}
+          />
+        )}
+        {state.progression === PROGRESSION_STATE.HIERARCHY && (
+          <HierarchyTask
+            onContinue={handleSubmitHierarchy}
+            showResult={state.showHierarchyTaskResult}
+            resultData={resultData}
           />
         )}
       </ContentContainer>
