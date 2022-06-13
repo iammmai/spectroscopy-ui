@@ -4,8 +4,9 @@ import Header from "Header/Header";
 import { LTS } from "pseuco-shared-components/lts/lts";
 import * as R from "ramda";
 import { useMemo, useReducer, useState } from "react";
+
 import { useQuery } from "react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { SpectroscopyViewResult } from "SpectroscopyResult/SpectroscopyResult";
 import styled from "styled-components";
 import { useQueryParams } from "utils/hooks";
@@ -74,6 +75,7 @@ const StudentView = () => {
   const showCcsTask = query.get("ccs");
   const showwDistinguishingTask = query.get("dist");
   const showHierarchyTask = query.get("hierarchy");
+  let navigate = useNavigate();
 
   const { isLoading, error, data, isSuccess } = useQuery(
     "spectroscopyResult",
@@ -101,7 +103,10 @@ const StudentView = () => {
   const handleSubmitDistinguishing = () =>
     dispatch({ type: "submitDistinguishing" });
 
-  const handleSubmitHierarchy = () => dispatch({ type: "submitHierarchy" });
+  const handleSubmitHierarchy = () => {
+    dispatch({ type: "submitHierarchy" });
+    navigate(`../${id}/result?left=${left}&right=${right}`);
+  };
 
   const resultData = R.find(
     R.allPass([
