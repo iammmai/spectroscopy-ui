@@ -1,36 +1,35 @@
+import { ArrowBack } from "@mui/icons-material";
 import { IconButton, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import api from "api";
+import * as R from "ramda";
 import {
-  useState,
+  forwardRef,
+  useCallback,
+  useEffect,
   useMemo,
   useRef,
-  useEffect,
-  useCallback,
-  forwardRef,
+  useState
 } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowBack } from "@mui/icons-material";
-import CircularProgress from "@mui/material/CircularProgress";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-
-import * as R from "ramda";
-
-import Header from "Header/Header";
 import styled from "styled-components";
 
-import LTSInteractiveView, {
-  LTSInteractiveViewProps,
-} from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
-import { LTS } from "../pseuco-shared-components/lts/lts";
-import ComparisonTable from "./ComparisonResultTable";
-import Arrow from "utils/arrowSvg";
-import { useQueryParams } from "utils/hooks";
-import api from "api";
 import EquivalenceHierarchy from "EquivalenceHierarchy/EquivalenceHierarchy";
+import Header from "Header/Header";
+import Arrow from "utils/arrowSvg";
 import { EquivalenceName, tagColors } from "utils/constants";
+import { useQueryParams } from "utils/hooks";
+import { LTS } from "../pseuco-shared-components/lts/lts";
+import LTSInteractiveView, {
+  LTSInteractiveViewProps
+} from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
+import ComparisonTable from "./ComparisonResultTable";
+import ShareModal from "./ShareModal";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -439,6 +438,11 @@ const SpectroscopyResultComponent = () => {
                   key={process.name}
                 >{`${process.name} = ${process.ccs}`}</Tag>
               ))}
+              <ShareModal
+                spectroscopyId={id as string}
+                left={left as string}
+                right={right as string}
+              />
             </Row>
             <Row>{renderLTSData()}</Row>
             <Box sx={{ width: "100%", paddingBottom: "100px" }}>
