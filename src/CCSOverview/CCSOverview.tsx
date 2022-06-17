@@ -132,7 +132,6 @@ function CCSOverview() {
     };
 
   const validateCCS = (processId: string) => () => {
-    console.log("parse", state.processes[processId].ccs);
     try {
       const parsedResult = parser.parse(state.processes[processId].ccs) as any;
       dispatch({

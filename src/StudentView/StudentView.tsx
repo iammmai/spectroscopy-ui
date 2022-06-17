@@ -95,8 +95,14 @@ const StudentView = () => {
   );
 
   const ltsData: LTS[] = useMemo(
-    () => (isSuccess ? [data.data.leftLTS, data.data.rightLTS] : []),
-    [isSuccess, data]
+    () =>
+      isSuccess
+        ? [
+            { ...data.data.leftLTS, initialState: left },
+            { ...data.data.rightLTS, initialState: right },
+          ]
+        : [],
+    [isSuccess, data, left, right]
   );
 
   const handleContinueCCS = () => dispatch({ type: "submitCCS" });
