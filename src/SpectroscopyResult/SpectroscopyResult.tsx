@@ -13,7 +13,7 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -26,7 +26,7 @@ import { EquivalenceName, tagColors } from "utils/constants";
 import { useQueryParams } from "utils/hooks";
 import { LTS } from "../pseuco-shared-components/lts/lts";
 import LTSInteractiveView, {
-  LTSInteractiveViewProps
+  LTSInteractiveViewProps,
 } from "../pseuco-shared-components/ui/editors/lts/LTSInteractiveView";
 import ComparisonTable from "./ComparisonResultTable";
 import ShareModal from "./ShareModal";
@@ -359,28 +359,30 @@ const SpectroscopyResultComponent = () => {
       const lts = R.find(R.hasPath(["states", initialStateKey]))(ltsData);
       const index = leftOrRight === "left" ? 0 : 1;
       return (
-        <g transform={`translate(${index * LTS_OFFSET - LEFT_SHIFT}, 0)`}>
-          <StyledLTSInteractiveView
-            lts={
-              {
-                ...lts,
-                initialState: initialStateKey,
-              } as LTS
-            }
-            width={LTS_WIDTH}
-            height={LTS_HEIGHT}
-            showExpandNotice={false}
-            stickyNodes={false}
-            directedExploration={false}
-            shortWeakSteps={false}
-            scale={0.5}
-            ref={(el: LTSInteractiveView) => (ltsRefs.current[index] = el)}
-            onStateClick={handleStateClick}
-            onStateMouseOver={handleMouseOver}
-            onStateMouseOut={handleMouseOut}
-            highlightColor="#56ccf2"
-          />
-        </g>
+        lts && (
+          <g transform={`translate(${index * LTS_OFFSET - LEFT_SHIFT}, 0)`}>
+            <StyledLTSInteractiveView
+              lts={
+                {
+                  ...lts,
+                  initialState: initialStateKey,
+                } as LTS
+              }
+              width={LTS_WIDTH}
+              height={LTS_HEIGHT}
+              showExpandNotice={false}
+              stickyNodes={false}
+              directedExploration={false}
+              shortWeakSteps={false}
+              scale={0.5}
+              ref={(el: LTSInteractiveView) => (ltsRefs.current[index] = el)}
+              onStateClick={handleStateClick}
+              onStateMouseOver={handleMouseOver}
+              onStateMouseOut={handleMouseOut}
+              highlightColor="#56ccf2"
+            />
+          </g>
+        )
       );
     },
     [ltsData, getInitialStateKey]
