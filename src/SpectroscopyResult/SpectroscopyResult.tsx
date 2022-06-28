@@ -358,6 +358,7 @@ const SpectroscopyResultComponent = () => {
       const initialStateKey = getInitialStateKey(leftOrRight);
       const lts = R.find(R.hasPath(["states", initialStateKey]))(ltsData);
       const index = leftOrRight === "left" ? 0 : 1;
+      console.log("lts", lts, ltsData);
       return (
         lts && (
           <g transform={`translate(${index * LTS_OFFSET - LEFT_SHIFT}, 0)`}>
