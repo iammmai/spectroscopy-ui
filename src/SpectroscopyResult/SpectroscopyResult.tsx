@@ -201,13 +201,12 @@ const SpectroscopyResultComponent = () => {
     }
   );
 
-  const sortedResultView = useMemo(
-    () =>
-      isSuccess
-        ? (R.path(["data", "result"])(data as any) as SpectroscopyViewResult[])
-        : [EMPTY_RESULT],
-    [data, isSuccess]
-  );
+  const sortedResultView = useMemo(() => {
+    console.log("data", data, isSuccess);
+    return isSuccess
+      ? (R.path(["data", "result"])(data as any) as SpectroscopyViewResult[])
+      : [EMPTY_RESULT];
+  }, [data, isSuccess]);
 
   const states = useMemo(
     () =>
