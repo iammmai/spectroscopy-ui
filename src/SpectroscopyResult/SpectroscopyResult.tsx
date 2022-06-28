@@ -201,12 +201,13 @@ const SpectroscopyResultComponent = () => {
     }
   );
 
-  const sortedResultView = useMemo(() => {
-    console.log("data", data, isSuccess);
-    return isSuccess
-      ? (R.path(["data", "result"])(data as any) as SpectroscopyViewResult[])
-      : [EMPTY_RESULT];
-  }, [data, isSuccess]);
+  const sortedResultView = useMemo(
+    () =>
+      isSuccess
+        ? (R.path(["data", "result"])(data as any) as SpectroscopyViewResult[])
+        : [EMPTY_RESULT],
+    [data, isSuccess]
+  );
 
   const states = useMemo(
     () =>
@@ -357,14 +358,7 @@ const SpectroscopyResultComponent = () => {
       const initialStateKey = getInitialStateKey(leftOrRight);
       const lts = R.find(R.hasPath(["states", initialStateKey]))(ltsData);
       const index = leftOrRight === "left" ? 0 : 1;
-      console.log(
-        "lts",
-        lts,
-        ltsData,
-        initialStateKey,
-        R.hasPath(["states", initialStateKey]),
-        leftOrRight
-      );
+
       return (
         lts && (
           <g transform={`translate(${index * LTS_OFFSET - LEFT_SHIFT}, 0)`}>
