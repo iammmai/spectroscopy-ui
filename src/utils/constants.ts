@@ -27,7 +27,8 @@ export const EQUIVALENCES = {
   },
   READY_SIMULATION: {
     name: "ready-simulation",
-    description: "dsfkjsdhfjlk",
+    description:
+      "A process p is ready-simulated by a process q, if there exists ready simulation pRSq, so that for every a ∈ Act, if there p is simulated by q and I(p) = I(q).",
     dimensions: {
       observations: "∞",
       conjunctions: "∞",
@@ -40,7 +41,8 @@ export const EQUIVALENCES = {
   },
   SIMULATION: {
     name: "simulation",
-    description: "dsfkjsdhdffjlk",
+    description:
+      "A process p is simulated by a process q, if there exists a simulation pRq.",
     dimensions: {
       observations: "∞",
       conjunctions: "∞",
@@ -53,7 +55,8 @@ export const EQUIVALENCES = {
   },
   READY_TRACE: {
     name: "ready-trace",
-    description: "dsfkjsdhfjlk",
+    description:
+      "Two states are failure equivalent if after every action in a trace, the same set of traces are available.",
     dimensions: {
       observations: "∞",
       conjunctions: "∞",
@@ -66,7 +69,8 @@ export const EQUIVALENCES = {
   },
   POSSIBLE_FUTURE: {
     name: "possible-future",
-    description: "dsfkjsdhfjlk",
+    description:
+      "Two states are impossible-future equivalent if after any trace, the same set of traces are available.",
     dimensions: {
       observations: "∞",
       conjunctions: "1",
@@ -79,7 +83,8 @@ export const EQUIVALENCES = {
   },
   FAILURE_TRACE: {
     name: "failure-trace",
-    description: "dsfkjsdhfjlk",
+    description:
+      "Two states are failure equivalent if after every action in a trace, the same set of traces are not available.",
     dimensions: {
       observations: "∞",
       conjunctions: "∞",
@@ -92,7 +97,8 @@ export const EQUIVALENCES = {
   },
   READINESS: {
     name: "readiness",
-    description: "dsfkjsdhfjlk",
+    description:
+      "Two states are readiness equivalent if after any trace, the same set of actions available.",
     dimensions: {
       observations: "∞",
       conjunctions: "1",
@@ -105,7 +111,8 @@ export const EQUIVALENCES = {
   },
   IMPOSSIBLE_FUTURE: {
     name: "impossible-future",
-    description: "dsfkjsdhfjlk",
+    description:
+      "Two states are impossible-future equivalent if after any trace, the same set of traces are not available.",
     dimensions: {
       observations: "∞",
       conjunctions: "1",
@@ -118,7 +125,8 @@ export const EQUIVALENCES = {
   },
   FAILURE: {
     name: "failure",
-    description: "dsfkjsdsdsdhfjlk",
+    description:
+      "Two states are failure equivalent if after every trace, the same set of actions are not available.",
     dimensions: {
       observations: "∞",
       conjunctions: "1",
@@ -132,7 +140,7 @@ export const EQUIVALENCES = {
   TRACES: {
     name: "traces",
     description:
-      "Two states s,r are trace equivalent iff Tr(s)=Tr(r). They can perform the same finite sequences of transitions)",
+      "Two states s,r are trace equivalent iff Tr(s)=Tr(r). They can perform the same finite sequences of transitions.",
     dimensions: {
       observations: "∞",
       conjunctions: "0",
@@ -145,7 +153,8 @@ export const EQUIVALENCES = {
   },
   ENABLEDNESS: {
     name: "enabledness",
-    description: "dsfkjsdhfjlk",
+    description:
+      "Two states are equivalent under enabledness, iff they have the same set of inital actions.",
     dimensions: {
       observations: "1",
       conjunctions: "0",
