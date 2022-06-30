@@ -28,7 +28,7 @@ const isValidCCS = (ccs: string | undefined) => {
 
 const initialNewProcessState = {
   ccs: undefined,
-  prefix: undefined,
+  processName: undefined,
   error: undefined,
 };
 
@@ -40,7 +40,7 @@ function SpectroscopyOverview() {
   const [showAddProcess, setShowAddProcess] = useState(false);
   const [newProcess, setNewProcess] = useState<{
     ccs: string | undefined;
-    prefix: string | undefined;
+    processName: string | undefined;
     error: string | undefined;
   }>(initialNewProcessState);
   const [selectedStates, setSelectedStates] = useState<
@@ -57,7 +57,7 @@ function SpectroscopyOverview() {
   );
 
   const updateFormulaMutation = useMutation(
-    (data: { id: string; ccs: string; prefix: string }) =>
+    (data: { id: string; ccs: string; processName: string }) =>
       api.post(`formulas/${data.id}`, data),
     {
       onSuccess: ({ data }: { data: any }) => {
@@ -67,7 +67,7 @@ function SpectroscopyOverview() {
   );
 
   const createFormulaMutation = useMutation(
-    (data: { spectroscopyId: string; ccs: string; prefix: string }) =>
+    (data: { spectroscopyId: string; ccs: string; processName: string }) =>
       api.post(`formulas`, data),
     {
       onSuccess: ({ data }: { data: any }) => {
@@ -98,8 +98,8 @@ function SpectroscopyOverview() {
   );
 
   const handleUpdateCCS =
-    (processId: string, prefix: string) => (ccs: string) => {
-      updateFormulaMutation.mutate({ id: processId, ccs, prefix });
+    (processId: string, processName: string) => (ccs: string) => {
+      updateFormulaMutation.mutate({ id: processId, ccs, processName });
     };
 
   const handleTitleChange = (title: string) => {
@@ -123,10 +123,10 @@ function SpectroscopyOverview() {
   };
 
   const handleSaveNewProcess = () => {
-    if (newProcess.ccs && newProcess.prefix) {
+    if (newProcess.ccs && newProcess.processName) {
       createFormulaMutation.mutate({
         ccs: newProcess.ccs,
-        prefix: newProcess.prefix,
+        processName: newProcess.processName,
         spectroscopyId: id as string,
       });
     }
@@ -196,12 +196,15 @@ function SpectroscopyOverview() {
                   _id: string;
                   ccs: string;
                   lts: LTS;
-                  prefix: string;
+                  processName: string;
                 }) => (
                   <LTSCard
                     ccs={process.ccs}
-                    onUpdateCCS={handleUpdateCCS(process._id, process.prefix)}
-                    label={process.prefix}
+                    onUpdateCCS={handleUpdateCCS(
+                      process._id,
+                      process.processName
+                    )}
+                    label={process.processName}
                     key={process._id}
                     lts={process.lts}
                     onRemove={handleDeleteProcess(process._id)}
@@ -219,7 +222,10 @@ function SpectroscopyOverview() {
                 <AddProcess
                   process={newProcess}
                   onPrefixChange={(e) =>
-                    setNewProcess({ ...newProcess, prefix: e.target.value })
+                    setNewProcess({
+                      ...newProcess,
+                      processName: e.target.value,
+                    })
                   }
                   onCCSChange={(e) =>
                     setNewProcess({ ...newProcess, ccs: e.target.value })

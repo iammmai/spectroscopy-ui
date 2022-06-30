@@ -6,13 +6,13 @@ import "./CCSOverview.css";
 
 const AddProcess = ({
   process,
-  onPrefixChange,
+  onPrefixChange: onProcessNameChange,
   onCCSChange,
   onRemove,
   onBlur,
   error,
 }: {
-  process: { id?: string; ccs?: string; prefix?: string };
+  process: { id?: string; ccs?: string; processName?: string };
   onPrefixChange: (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => void;
@@ -23,13 +23,21 @@ const AddProcess = ({
   onBlur: any;
   error: string | undefined;
 }) => {
+  const isValidProcessName = (name: string) =>
+    !!name.match(/\w0/gm) && name.length === 2;
   return (
     <div className="row-container">
       <TextField
-        label="Process-prefix"
+        label="Process name"
         variant="outlined"
-        onChange={onPrefixChange}
-        value={process.prefix}
+        onChange={onProcessNameChange}
+        value={process.processName}
+        {...(process.processName &&
+          !isValidProcessName(process.processName) && {
+            error: true,
+            helperText:
+              "Process name needs to start with a letter followed by 0.",
+          })}
       />
       :
       <TextField

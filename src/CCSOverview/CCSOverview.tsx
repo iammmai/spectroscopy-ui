@@ -20,7 +20,7 @@ const initialState = {
       ccs: "",
       ccsError: null,
       ccsParsed: null,
-      prefix: "P",
+      processName: "P0",
     },
   },
   disableAddProcess: true,
@@ -28,8 +28,8 @@ const initialState = {
 
 const isValidCCS = R.pipe(R.path(["ccsError"]), R.isNil);
 const hasCCS = R.pipe(R.path(["ccs"]), R.isEmpty, R.not);
-const hasPrefix = R.pipe(R.path(["prefix"]), R.isNil, R.not);
-const isValid = R.allPass([isValidCCS, hasCCS, hasPrefix]);
+const hasProcessName = R.pipe(R.path(["processName"]), R.isNil, R.not);
+const isValid = R.allPass([isValidCCS, hasCCS, hasProcessName]);
 
 const reducer = (
   state: any,
@@ -81,7 +81,7 @@ const reducer = (
             ccsError: null,
             ccsParsed: null,
             id: action.process,
-            prefix: null,
+            processName: undefined,
           },
         },
         disableAddProcess: true,
@@ -95,14 +95,14 @@ const reducer = (
       };
     }
 
-    case "setPrefix": {
+    case "setProcessName": {
       return {
         ...state,
         processes: {
           ...state.processes,
           [action.process]: {
             ...state.processes[action.process],
-            prefix: action.payload,
+            processName: action.payload,
           },
         },
       };
@@ -154,7 +154,7 @@ function CCSOverview() {
       spectroscopy: {},
       processes: Object.values(state.processes).map((process: any) => ({
         ccs: process.ccs,
-        prefix: process.prefix,
+        processName: process.processName,
       })),
     });
   };
@@ -179,11 +179,11 @@ function CCSOverview() {
     });
   };
 
-  const handlePrefixChange =
+  const handleProcessNameChange =
     (processId: string) =>
     (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
       dispatch({
-        type: "setPrefix",
+        type: "setProcessName",
         payload: e.target.value,
         process: processId,
       });
@@ -205,7 +205,7 @@ function CCSOverview() {
               key={process.id}
               process={process}
               error={process.ccsError}
-              onPrefixChange={handlePrefixChange(process.id)}
+              onPrefixChange={handleProcessNameChange(process.id)}
               onCCSChange={handleChange(process.id)}
               onRemove={handleRemoveProcess(process.id)}
               onBlur={validateCCS(process.id)}
