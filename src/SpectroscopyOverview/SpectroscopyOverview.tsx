@@ -8,13 +8,14 @@ import AddProcess from "CCSOverview/AddProcess";
 import Header from "Header/Header";
 import { LTS } from "pseuco-shared-components/lts/lts";
 import * as R from "ramda";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import EditableTitle from "./EditableTitle";
 import LTSCard from "./LTS";
 import Settingsbar from "./SettingsBar";
 import "./SpectroscopyOverview.css";
+import { debounce } from "utils";
 
 const isValidCCS = (ccs: string | undefined) => {
   if (!ccs) return false;
@@ -110,6 +111,12 @@ function SpectroscopyOverview() {
     updateSpectroscopyMutation.mutate({ id: id as string, description });
   };
 
+  const debounceTitleChange = useCallback(debounce(handleTitleChange, 400), []);
+  const debounceDescriptionChange = useCallback(
+    debounce(handleDescriptionChange, 400),
+    []
+  );
+
   const handleAddProcess = () => {
     setShowAddProcess(true);
   };
@@ -177,7 +184,7 @@ function SpectroscopyOverview() {
             <EditableTitle
               value={data.title}
               inputLabel="Title"
-              onChange={handleTitleChange}
+              onChange={debounceTitleChange}
               variant="h4"
               placeholder="Add title"
               showEditOnHover
@@ -185,7 +192,7 @@ function SpectroscopyOverview() {
             <EditableTitle
               value={data.description}
               inputLabel="Description"
-              onChange={handleDescriptionChange}
+              onChange={debounceDescriptionChange}
               variant="h6"
               placeholder="Add description"
               showEditOnHover
