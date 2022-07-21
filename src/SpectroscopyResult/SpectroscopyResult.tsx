@@ -231,11 +231,11 @@ const SpectroscopyResultComponent = () => {
   );
 
   const handleExpandAll = (lts: LTS) => {
-    for (let i = 0; i < Object.keys(lts.states).length; i++) {
-      if (ltsRefs.current[i]) {
-        (ltsRefs.current[i] as LTSInteractiveView).expandAllSingleStep();
+    ltsRefs.current.forEach((ref) => {
+      for (let i = 0; i <= Object.keys(lts.states).length; i++) {
+        ref.expandAllSingleStep();
       }
-    }
+    });
   };
 
   const ltsData: LTS[] = useMemo(

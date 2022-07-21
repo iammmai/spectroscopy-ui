@@ -75,20 +75,22 @@ const LTSViewer = ({
     <div className={className}>
       {!expandAll && <Button onClick={handleExpandAll}>Expand all</Button>}
       <svg width={width} height={height} id="lts-svg">
-        <StyledLTSView
-          lts={lts}
-          width={width}
-          height={height}
-          showExpandNotice={false}
-          stickyNodes={false}
-          directedExploration={false}
-          shortWeakSteps={false}
-          scale={0.5}
-          ref={ref}
-          onStateClick={onStateClick}
-          selectedKeys={selectedStates}
-          highlightColor={getHighlightColor()}
-        />
+        {!R.isEmpty(lts.states) && (
+          <StyledLTSView
+            lts={lts}
+            width={width}
+            height={height}
+            showExpandNotice={false}
+            stickyNodes={false}
+            directedExploration={false}
+            shortWeakSteps={false}
+            scale={0.5}
+            ref={ref}
+            onStateClick={onStateClick}
+            selectedKeys={selectedStates}
+            highlightColor={getHighlightColor()}
+          />
+        )}
       </svg>
     </div>
   );

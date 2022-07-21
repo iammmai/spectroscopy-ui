@@ -70,6 +70,7 @@ const LTSCard = ({
           lts={lts}
           onStateClick={onStateClick}
           selectedStates={selectedStates}
+          expandAll
         />
       </AccordionDetails>
     </Accordion>
